@@ -1,0 +1,7 @@
+git操作
+
+一度add-commit-pushしたファイルを、履歴を残して修正する場合
+git log --oneline　で、対象のコミット履歴を検索しナンバーを控える
+↓
+git revert ******　を実行
+

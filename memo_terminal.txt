@@ -1,0 +1,114 @@
+cmd の基本操作（最重要だけ）
+1. 現在地の確認
+cd
+
+または
+
+chdir
+
+👉 Git Bash の pwd に相当
+
+2. ファイル・フォルダ一覧
+dir
+
+オプション：
+
+dir /p   ← ページ区切り
+dir /w   ← 横並び表示
+
+👉 ls の代わり
+
+3. ディレクトリ移動
+cd フォルダ名
+よく使う
+cd ..     ← 1つ上へ
+cd \      ← ルートへ
+cd /d D:\work   ← ドライブごと移動（重要）
+
+⚠ cmdはドライブの概念あり
+
+C:
+D:
+
+だけでも移動できる
+
+4. フォルダ作成
+mkdir フォルダ名
+
+または
+
+md フォルダ名
+5. ファイル作成
+type nul > file.txt
+
+※ちょっと癖あり
+（VS Code使う方が楽）
+
+6. コピー
+copy 元 先
+
+例：
+
+copy a.txt b.txt
+
+別フォルダへ：
+
+copy a.txt D:\backup\
+7. フォルダコピー（重要）
+xcopy 元 先 /E /I
+
+例：
+
+xcopy src backup /E /I
+/E：サブフォルダ含む
+/I：フォルダ扱い
+
+👉 cp -r 相当
+
+8. 名前変更
+ren old.txt new.txt
+
+フォルダもOK：
+
+ren old_folder new_folder
+9. 削除（注意）
+del ファイル名
+
+フォルダ：
+
+rmdir フォルダ名 /S
+10. 画面クリア
+cls
+■ Git Bash との対応表（重要）
+cmd	Git Bash
+dir	ls
+cd	cd
+copy	cp
+xcopy	cp -r
+ren	mv
+del	rm
+rmdir	rm -r
+■ よくあるつまずき
+① ドライブ移動できない
+cd D:\work   ← 失敗
+
+👉 正しくは
+
+cd /d D:\work
+② パス区切りが違う
+\   ← cmd
+/   ← Git Bash
+③ Tab補完は使える
+ファイル名途中で Tab
+■ 最低限これだけ覚える
+dir
+cd
+mkdir
+copy
+ren
+del
+
+他
+VSCodeで日本語入力を有効にするには、
+①ターミナルからCommand Promptを選択
+②ターミナルで　chcp 65001　を実行

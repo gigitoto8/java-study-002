@@ -10,7 +10,6 @@ public class Task {
         this.taskId = counter;
         this.task = task;
         this.category = category;
-        System.out.println("taskId : " + taskId + " , task : " + task + " , category : " + category);
     }
     public int getTaskId(){return taskId;}
     public String getTask(){return task;}
@@ -18,4 +17,13 @@ public class Task {
     public void setTask(String task){this.task = task;}
     public void setCategory(String category){this.category = category;}
     //※外部からID変更させないため、Id設定メソッド（setIdTask）は定義しない
+
+    @Override
+    public String toString(){
+        //フォーマット
+        return String.format(
+            "taskId : %d , task : %s , category : %s",
+            taskId, task, category
+        );
+    }
 }

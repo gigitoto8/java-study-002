@@ -25,6 +25,7 @@ public class Main{
         sc.nextLine();
         System.out.print("memo? : ");
         String memo = sc.nextLine();
+
         TaskLog log001 = new TaskLog(task001.getTaskId(),date ,minutes, memo);
         
         System.out.print("date? : ");

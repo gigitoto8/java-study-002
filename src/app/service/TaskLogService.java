@@ -1,3 +1,6 @@
+package app.service;
+
+import app.model.TaskLog;
 import java.util.ArrayList;
 import java.util.List;
 

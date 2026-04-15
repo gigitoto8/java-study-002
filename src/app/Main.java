@@ -1,5 +1,12 @@
+package app;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
+import app.model.Task;
+import app.model.TaskLog;
+import app.service.TaskLogService;
+import app.service.TaskService;
 
 public class Main{
     

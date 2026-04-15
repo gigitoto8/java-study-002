@@ -1,3 +1,5 @@
+package app.model;
+
 public class Task {
     
     private int taskId;

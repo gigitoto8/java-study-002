@@ -1,3 +1,6 @@
+package app.service;
+
+import app.model.Task;
 import java.util.ArrayList;
 import java.util.List;
 

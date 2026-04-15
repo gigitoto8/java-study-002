@@ -16,7 +16,7 @@ public class TaskService {
     //Taskデータを保存するリスト
     private List<Task> tList = new ArrayList<>();
 
-    //
+    //リスト保存とCSV保存
     public void addTask(Task task){
         tList.add(task);
         tRepository.saveTask(task); // ← ここで保存
@@ -28,8 +28,25 @@ public class TaskService {
         addTask(t); // オーバーロード
     }
 
-    public List<Task> getTasks(){
-        return tList;
+    //CSVファイルを読み込み、データをListに保存
+    public void loadTaskCSV(){
+        tList = tRepository.loadTasks();
+        int maxId = 0;
+        for(Task t : tList){
+            if(t.getTaskId() > maxId){
+                maxId = t.getTaskId();
+            }
+        }
+        Task.setCount(maxId);
+    }
+
+    //一覧表示
+    public void getTasks(){
+        System.out.println("\n--------task--------------------");
+        for(Task t : tList){
+            System.out.println(t);
+        }
+        System.out.println("--------task--------------------\n");
     }    
 
     //taskIdが存在するかチェック

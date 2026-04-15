@@ -28,9 +28,10 @@ public class Main{
         // TaskServiceをTaskLogServiceに渡すことで、
         // TaskLog登録時にtaskIdの存在チェックを行う（同一のTaskデータを参照するため）
         TaskLogService tLService = new TaskLogService(tService);
-
-        System.out.println("\n");
+        
         System.out.println("----------------------------------------");
+        
+        tService.loadTaskCSV();
 
         System.out.print("task ? : ");
         task = sc.nextLine();
@@ -46,9 +47,7 @@ public class Main{
         tService.addTask("買い物","家事");
         tService.addTask("書類作成","仕事");
         //taskリスト一覧表示およびCSV保存
-        for(Task t : tService.getTasks()){
-            System.out.println(t);
-        }
+        tService.getTasks();
 
         
         /*

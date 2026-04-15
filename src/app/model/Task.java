@@ -7,6 +7,7 @@ public class Task {
     private String category;
     private static int counter = 0;
 
+    //コンストラクタ、入力データ受取時
     public Task(String task,String category){
         //インスタンス作成時、taskIdが自動生成される
         counter++;
@@ -14,12 +15,22 @@ public class Task {
         this.task = task;
         this.category = category;
     }
+
+    //コンストラクタ、CSVデータ読込時
+    public Task(int taskId,String task,String category){
+        this.taskId = taskId;
+        this.task = task;
+        this.category = category;
+    }
+
     public int getTaskId(){return taskId;}
     public String getTask(){return task;}
     public String getCategory(){return category;}
     public void setTask(String task){this.task = task;}
     public void setCategory(String category){this.category = category;}
     //※外部からID変更させないため、Id設定メソッド（setIdTask）は定義しない
+    //CSV読込時に読み込んだtaskIdをcounterに設定する
+    public static void setCount(int c){counter = c;}
 
     //形式を定めてCSVに保存する
     public String toCsv(){

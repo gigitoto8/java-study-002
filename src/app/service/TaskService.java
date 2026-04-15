@@ -1,20 +1,31 @@
 package app.service;
 
 import app.model.Task;
+import app.repository.TaskRepository;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaskService {
     
+    private TaskRepository tRepository;
+    //外からRepositoryを受け取る
+    public TaskService(TaskRepository tRepository){
+        this.tRepository = tRepository;
+    }
+
+    //Taskデータを保存するリスト
     private List<Task> tList = new ArrayList<>();
 
+    //
     public void addTask(Task task){
         tList.add(task);
+        tRepository.saveTask(task); // ← ここで保存
     }
 
     public void addTask(String task,String category){
-        Task task001 = new Task(task, category);
-        tList.add(task001);
+        //インスタンス作成時、taskIdが自動生成される
+        Task t = new Task(task, category);
+        addTask(t); // オーバーロード
     }
 
     public List<Task> getTasks(){

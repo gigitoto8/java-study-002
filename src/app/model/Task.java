@@ -8,6 +8,7 @@ public class Task {
     private static int counter = 0;
 
     public Task(String task,String category){
+        //インスタンス作成時、taskIdが自動生成される
         counter++;
         this.taskId = counter;
         this.task = task;
@@ -19,6 +20,11 @@ public class Task {
     public void setTask(String task){this.task = task;}
     public void setCategory(String category){this.category = category;}
     //※外部からID変更させないため、Id設定メソッド（setIdTask）は定義しない
+
+    //形式を定めてCSVに保存する
+    public String toCsv(){
+        return taskId + "," + task + "," + category;
+    }
 
     @Override
     public String toString(){

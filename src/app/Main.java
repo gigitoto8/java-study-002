@@ -1,12 +1,11 @@
 package app;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Scanner;
-
 import app.model.Task;
-import app.model.TaskLog;
+import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Main{
     
@@ -18,9 +17,16 @@ public class Main{
         String memo;
         int taskId;
 
+        //入力関係
         Scanner sc = new Scanner(System.in,StandardCharsets.UTF_8);
         
-        TaskService tService = new TaskService();
+        //TaskRepositoryクラス用
+        TaskRepository tRepository = new TaskRepository();
+        // TaskRepositoryをTaskServiceに渡すことで、
+        // タスク追加時に「メモリへの登録」と「CSVへの保存」を一貫して行えるようにする
+        TaskService tService = new TaskService(tRepository);
+        // TaskServiceをTaskLogServiceに渡すことで、
+        // TaskLog登録時にtaskIdの存在チェックを行う（同一のTaskデータを参照するため）
         TaskLogService tLService = new TaskLogService(tService);
 
         System.out.println("\n");
@@ -31,16 +37,21 @@ public class Main{
         System.out.print("category ? : ");
         category = sc.nextLine();
         Task task001 = new Task(task, category);
-        //taskリストに加える
+
+        //taskリストに加えると同時に、CSVファイルに保存
         tService.addTask(task001);
+        /*
+        */
         //↓動作確認で入力時間を省くため、オーバーロードで対処
         tService.addTask("買い物","家事");
         tService.addTask("書類作成","仕事");
-        //taskリスト一覧表示
+        //taskリスト一覧表示およびCSV保存
         for(Task t : tService.getTasks()){
             System.out.println(t);
         }
+
         
+        /*
         System.out.print("date ? : ");
         date = sc.nextLine();
         System.out.print("minutes ? : ");
@@ -62,5 +73,6 @@ public class Main{
         for(TaskLog t : tLService.getTaskLogs()){
             System.out.println(t);
         }        
+        */
     }
 }

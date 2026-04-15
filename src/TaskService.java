@@ -17,4 +17,14 @@ public class TaskService {
     public List<Task> getTasks(){
         return tList;
     }    
+
+    //taskIdが存在するかチェック
+    public boolean existById(int taskId){        
+        for(Task t : tList){
+            if(t.getTaskId() == taskId){
+                return true;
+            }
+        }
+        return false;
+    }
 }

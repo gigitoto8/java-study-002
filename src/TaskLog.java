@@ -10,8 +10,6 @@ public class TaskLog {
         this.date = date;
         this.minutes = minutes;
         this.memo = memo;
-
-        System.out.println("taskId : " + taskId + " , date : " + date + " , minutes : " + minutes + " , memo : " + memo);
     }
 
     public int getTaskId() {return this.taskId;}
@@ -23,4 +21,13 @@ public class TaskLog {
     public void setDate(String date){this.date = date;}
     public void setMinutes(int minutes){this.minutes = minutes;}
     public void setMemo(String memo){this.memo = memo;}
+
+    @Override
+    public String toString(){
+        //フォーマット
+        return String.format(
+            "taskId : %d , date : %s , minutes : %d , memo : %s",
+            taskId , date , minutes , memo
+        );
+    }
 }

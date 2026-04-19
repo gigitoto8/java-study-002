@@ -24,6 +24,12 @@ public class TaskLog {
     public void setMinutes(int minutes){this.minutes = minutes;}
     public void setMemo(String memo){this.memo = memo;}
 
+    //形式を定めてCSVに保存する
+    public String toCsv(){
+        return taskId + "," + date + "," + minutes + "," + memo;
+    }
+
+
     @Override
     public String toString(){
         //フォーマット

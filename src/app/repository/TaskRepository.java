@@ -17,20 +17,21 @@ public class TaskRepository {
     
     private static final String TASK_FILE_PATH = "app/data/task_record_001.csv";
 
-    File file = new File(TASK_FILE_PATH);
-    //ファイル有無確認
-    boolean notExistFile = !file.exists();
-
+    
     public void saveTask(Task task){
-
+        
+        File file = new File(TASK_FILE_PATH);
+        //ファイル有無確認
+        boolean notExistFile = !file.exists();
+        
         try (BufferedWriter bw = new BufferedWriter(
             new OutputStreamWriter(
-                    new FileOutputStream(TASK_FILE_PATH, true),
-                    StandardCharsets.UTF_8))) {
-            
-            //CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
-            if(notExistFile | file.length() == 0){
-                bw.write("task_id,task,subject\n");
+                new FileOutputStream(TASK_FILE_PATH, true),
+                StandardCharsets.UTF_8))) {
+                    
+                    //CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
+            if(notExistFile || file.length() == 0){
+                bw.write("task_id,task,category\n");
             }
             
             bw.write(task.toCsv() + "\n");
@@ -40,13 +41,17 @@ public class TaskRepository {
             e.printStackTrace();
         }
     }
-
-        //ファイル読み込み
+    
+    //ファイル読み込み
     public List<Task> loadTasks(){
-
+        
+        File file = new File(TASK_FILE_PATH);
+        //ファイル有無確認
+        boolean notExistFile = !file.exists();
+        
         //リスト（読み込みデータを入れる箱）準備
         List<Task> list = new ArrayList<>(); 
-
+        
         //CSVファイルが存在しない場合、空のリストを戻しメソッドを修了させる
         if(notExistFile){
             System.out.println("no data\n");

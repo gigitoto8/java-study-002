@@ -7,6 +7,8 @@ import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main{
@@ -47,8 +49,13 @@ public class Main{
             System.out.println("----------------------------------------");
             
             System.out.println("実行したい機能を選択してください");
-            System.out.println(" 1 : タスク登録 / 2 : ログ登録 / " + 
-                        "3 : タスク一覧表示 / 4 : ログ一覧表示 / 5 : 終了\n");
+            System.out.println("""
+                     1 : タスク登録 \n 2 : ログ登録 
+                     3 : タスク一覧表示 \n 4 : ログ一覧表示 
+                     5 : タスク別時間集計 \n 6 : 期間指定集計
+                     7 : 検索 \n 8 : 
+                     9 : 終了
+                    """);
 
             //整数以外を入力した場合の処理
             if(!sc.hasNextInt()){
@@ -74,23 +81,53 @@ public class Main{
                     TaskLog tLInput = inputTaskLog(sc);
                     tLService.addTaskLog(tLInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    tLService.addTaskLog(2,"2026-01-31",60,"洗濯");
-                    tLService.addTaskLog(3,"2026-02-15",120,"帳簿");        
-                    tLService.addTaskLog(4,"2020-10-15",300,"買い物");        
+                    tLService.addTaskLog(2,"2026/01/31",60,"洗濯");
+                    tLService.addTaskLog(3,"2026/02/15",120,"帳簿");        
+                    tLService.addTaskLog(4,"2020/10/15",300,"買い物");        
                 break;
 
                 // 3 : タスク一覧表示
                 case 3:
-                    tService.getTasks();
+                    List<Task> tasks = tService.getTasks();
+                    System.out.println("\n--------task--------------------");
+                    for(Task t : tasks){
+                        System.out.println(t);
+                    }
+                    System.out.println("--------task--------------------\n");
                 break;
-                
+                    
                 // 4 : ログ一覧表示
                 case 4:
-                    tLService.getTaskLogs();
+                    List<TaskLog> taskLogs = tLService.getTaskLogs();
+                    System.out.println("\n--------tasklog--------------------");
+                    for(TaskLog t : taskLogs){
+                        System.out.println(t);
+                    }
+                    System.out.println("--------tasklog--------------------\n");
                 break;
                 
-                // 5 : 終了
-                case 5 :
+                // 5 : タスク別時間集計
+                case 5:
+                    Map<String,Integer> map = tLService.sumByTaskLogs();
+                    for(String key : map.keySet()){
+                        System.out.println("task : " + key + " / total : " + map.get(key));
+                    }
+                break;
+                
+                /*
+                // 4 : ログ一覧表示
+                case 6:
+                    tLService.getTaskLogs();
+                break;
+                    
+                // 4 : ログ一覧表示
+                case 7:
+                    tLService.getTaskLogs();
+                break;
+                */
+                        
+                // 9 : 終了
+                case 9 :
                     System.out.println("終了します");
                 return;
 
@@ -111,7 +148,8 @@ public class Main{
     static TaskLog inputTaskLog(Scanner sc){
         System.out.print("date ? : ");
         String date = sc.nextLine();
-        System.out.print("minutes ? : ");
+        System.out.print("minutes ?  ");
+        System.out.print("****/  ");
         int minutes = sc.nextInt();
         sc.nextLine();
         System.out.print("memo ? : ");

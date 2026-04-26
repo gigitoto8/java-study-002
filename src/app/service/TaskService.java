@@ -32,6 +32,7 @@ public class TaskService {
     public void loadTaskCSV(){
         tList = tRepository.loadTasks();
         int maxId = 0;
+        //使用済みtaskIdを取得
         for(Task t : tList){
             if(t.getTaskId() > maxId){
                 maxId = t.getTaskId();
@@ -41,13 +42,9 @@ public class TaskService {
     }
 
     //一覧表示
-    public void getTasks(){
-        System.out.println("\n--------task--------------------");
-        for(Task t : tList){
-            System.out.println(t);
-        }
-        System.out.println("--------task--------------------\n");
-    }    
+    public List<Task> getTasks(){
+        return tList;
+    }
 
     //taskIdが存在するかチェック
     public boolean existById(int taskId){        

@@ -8,31 +8,31 @@ import java.util.List;
 public class TaskService {
     
     private TaskRepository tRepository;
-    //外からRepositoryを受け取る
+    // 外からRepositoryを受け取る
     public TaskService(TaskRepository tRepository){
         this.tRepository = tRepository;
     }
 
-    //Taskデータを保存するリスト
+    // Taskデータを保存するリスト
     private List<Task> tList = new ArrayList<>();
 
-    //リスト保存とCSV保存
+    // リスト保存とCSV保存
     public void addTask(Task task){
         tList.add(task);
         tRepository.saveTask(task); // ← ここで保存
     }
 
     public void addTask(String task,String category){
-        //インスタンス作成時、taskIdが自動生成される
+        // インスタンス作成時、taskIdが自動生成される
         Task t = new Task(task, category);
         addTask(t); // オーバーロード
     }
 
-    //CSVファイルを読み込み、データをListに保存
+    // CSVファイルを読み込み、データをListに保存
     public void loadTaskCSV(){
         tList = tRepository.loadTasks();
         int maxId = 0;
-        //使用済みtaskIdを取得
+        // 使用済みtaskIdを取得
         for(Task t : tList){
             if(t.getTaskId() > maxId){
                 maxId = t.getTaskId();
@@ -41,12 +41,12 @@ public class TaskService {
         Task.setCount(maxId);
     }
 
-    //一覧表示
+    // タスク一覧取得
     public List<Task> getTasks(){
         return tList;
     }
 
-    //taskIdが存在するかチェック
+    // taskIdが存在するかチェック
     public boolean existById(int taskId){        
         for(Task t : tList){
             if(t.getTaskId() == taskId){
@@ -54,5 +54,17 @@ public class TaskService {
             }
         }
         return false;
+    }
+
+    // TaskLog等のtaskIdからtaskNameを返す
+    public String findById(int taskId){
+        String taskName = "";
+        for(Task t : tList){
+            if(taskId == t.getTaskId()){
+                taskName = t.getTask();
+                break;
+            }
+        }
+        return taskName;
     }
 }

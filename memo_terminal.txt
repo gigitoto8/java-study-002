@@ -112,3 +112,6 @@ del
 VSCodeで日本語入力を有効にするには、
 ①ターミナルからCommand Promptを選択
 ②ターミナルで　chcp 65001　を実行
+
+全.class削除
+del /s app\*.class

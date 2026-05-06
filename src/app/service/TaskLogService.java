@@ -4,6 +4,7 @@ import app.model.Task;
 import app.model.TaskLog;
 import app.repository.TaskLogRepository;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,6 @@ public class TaskLogService {
     
     // TaskLogデータを保存する変数
     private List<TaskLog> tLList = new ArrayList<>();
-    //Taskデータを保存するリスト
-    private List<Task> tList = new ArrayList<>();
 
     // リスト保存とCSV保存
     //実際にTaskIdが使われているかチェックできた場合、保存を実行。
@@ -46,24 +45,30 @@ public class TaskLogService {
 
     // タスクログ一覧取得
     public List<TaskLog> getTaskLogs(){
-        return tLList;
+        return  new ArrayList<>(tLList);
     }
     
     // タスク別時間集計
     public Map<String,Integer> sumByTaskLogs(){        
+        // 戻り値として使用するMap変数
         Map<String,Integer> result = new HashMap<>();
+        // Taskデータ参照用Map変数
+        Map<Integer,String> taskMap = new HashMap<>();
+        List<Task> tList = tService.getTasks();
+        //taskMapにTaskデータを保存
+        for(Task t : tList){
+            taskMap.put(t.getTaskId(),t.getTask());
+        }
 
+        // 
         for(TaskLog tL : tLList){
-            int taskId = tL.getTaskId();
-            String task = null;
-            tList = tService.getTasks();
-            // tLListとtListのtaskIdが一致する場合、taskにタスク名を代入
-            for(Task t : tList){        
-                if(taskId  == t.getTaskId()){
-                    task = t.getTask();
-                    break;
-                }
+            // TaskデータのtaskIdと一致する場合、紐づいたtask名を取得する
+            String task = taskMap.get(tL.getTaskId());
+            // ↓taskが見つからない場合は下記の処理。nullがmapに入ってしまうのは好ましくない
+            if(task == null){
+                continue;
             }
+
             int minutes = tL.getMInutes();
             
             if(result.containsKey(task)){
@@ -78,17 +83,17 @@ public class TaskLogService {
     // 期間指定ログ一覧
     public List<TaskLog> periodTaskLogs(String from,String to){
         // 開始日または終了日が未入力の場合、それぞれ最大値または最小値を代入
-        if(from == ""){
+        if(from.isEmpty()){
             from = "0000-00-00";
         }
-        if(to == ""){
+        if(to.isEmpty()){
             to = "9999-99-99";
         }
         List<TaskLog> periodTL = new ArrayList<>();
         // 日付がfrom以降かつto以前であるデータをperiodTLListに保存する
         for(TaskLog tL: tLList){
             if((tL.getDate().compareTo(from) >= 0) 
-                & (tL.getDate().compareTo(to) <= 0)){
+                && (tL.getDate().compareTo(to) <= 0)){
                 periodTL.add(tL);                
             }
         }
@@ -97,18 +102,22 @@ public class TaskLogService {
 
     // 期間指定集計
     public Map<String,Integer> sumByPeriodTaskLogs(List<TaskLog> tLList){
+        // 戻り値として使用するMap変数
         Map<String,Integer> result = new HashMap<>();
+        // Taskデータ参照用Map変数
+        Map<Integer,String> taskMap = new HashMap<>();
+        List<Task> tList = tService.getTasks();
+        //taskMapにTaskデータを保存
+        for(Task t : tList){
+            taskMap.put(t.getTaskId(),t.getTask());
+        }
 
         for(TaskLog tL : tLList){
-            int taskId = tL.getTaskId();
-            String task = null;
-            // tLListとtListのtaskIdが一致する場合、taskにタスク名を代入
-            for(Task t : tList){      
-                System.out.println(t);  
-                if(taskId  == t.getTaskId()){
-                    task = t.getTask();
-                    break;
-                }
+            // TaskデータのtaskIdと一致する場合、紐づいたtask名を取得する
+            String task = taskMap.get(tL.getTaskId());
+            // ↓taskが見つからない場合は下記の処理。nullがmapに入ってしまうのは好ましくない
+            if(task == null){
+                continue;
             }
             int minutes = tL.getMInutes();
             
@@ -124,12 +133,12 @@ public class TaskLogService {
     // 検索
     public List<TaskLog> searchByTaskName(String keyword){
         List<TaskLog> sumByPeriodTL = new ArrayList<>();
-        tList = tService.getTasks();
-        int taskId = 0;
+        List<Task> tList = tService.getTasks();
+        int taskId = -1;        // 0にすると、0で検索される危険がある
         // keywordに該当するtaskIdを抽出する
         int count = 0;
         for(Task t : tList){
-            if(t.getTask().equals(keyword)){
+            if(t.getTask().contains(keyword)){
                 taskId = t.getTaskId();
                 break;
             }else{
@@ -146,6 +155,27 @@ public class TaskLogService {
             }
         }
         return sumByPeriodTL;
+    }
+
+    // ソート
+    public List<Map.Entry<String,Integer>> sortBySumByTime(boolean desc){
+        // 集計データ（全期間）をMAP形式で取得
+        Map<String,Integer> result = sumByTaskLogs();
+        // MAP形式からLIST形式に変換
+        List<Map.Entry<String, Integer>> mapToList = new ArrayList<>(result.entrySet());
+
+        mapToList.sort(new Comparator<Map.Entry<String,Integer>>() {
+            @Override
+            public int compare(Map.Entry<String,Integer> a,
+                                Map.Entry<String,Integer> b) {
+                if(desc){
+                    return b.getValue() - a.getValue(); // 降順
+                }else{
+                    return a.getValue() - b.getValue(); // 昇順
+                }
+            }
+        });
+        return mapToList;
     }
 
 }

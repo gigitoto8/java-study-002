@@ -15,8 +15,6 @@ public class Main{
 
     private static TaskService tService;
     private static TaskLogService tLService;
-    private static List<TaskLog> taskLogs;
-    private static List<Task> tasks;
     
     public static void main(String[] args) {
         // 初期化ブロック
@@ -38,9 +36,6 @@ public class Main{
         // CSVからデータ読み込み、Listに復元
         tService.loadTaskCSV();
         tLService.loadTaskLogCSV();
-        // 
-        tasks = tService.getTasks();
-        taskLogs = tLService.getTaskLogs();
     }
     
     static void run(){
@@ -55,11 +50,12 @@ public class Main{
             
             System.out.println("実行したい機能を選択してください");
             System.out.println("""
-                     1 : タスク登録 \n 2 : ログ登録 
-                     3 : タスク一覧表示 \n 4 : ログ一覧表示 
-                     5 : タスク別時間集計 \n 6 : 期間指定
-                     7 : 期間指定タスク別時間集計 \n 8 : タスク検索
-                     9 : 終了
+                      1 : タスク登録 \n  2 : ログ登録 
+                      3 : タスク一覧表示 \n  4 : ログ一覧表示 
+                      5 : タスク別時間集計 \n  6 : 期間指定
+                      7 : 期間指定タスク別時間集計 \n  8 : タスク検索
+                      9 : 集計結果ソート \n 
+                     99 : 終了
                     """);
 
             // 整数以外を入力した場合の処理
@@ -92,16 +88,17 @@ public class Main{
 
                 // 3 : タスク一覧表示
                 case 3:
-                    tasks = tService.getTasks();
+                    List<Task> tasks = tService.getTasks();
                     System.out.println("\n--------task--------------------");
                     for(Task t : tasks){
                         System.out.println(t);
                     }
                     System.out.println("--------task--------------------\n");
-                break;
+                    break;
                     
                 // 4 : ログ一覧表示
                 case 4:
+                    List<TaskLog> taskLogs = tLService.getTaskLogs();
                     taskLogs = tLService.getTaskLogs();
                     System.out.println("\n--------tasklog--------------------");
                     for(TaskLog t : taskLogs){
@@ -114,8 +111,8 @@ public class Main{
                 case 5:
                     Map<String,Integer> mapSB = tLService.sumByTaskLogs();
                     System.out.println("\n--------result--------------------");
-                    for(String key : mapSB.keySet()){
-                        System.out.println("task : " + key + " / total : " + mapSB.get(key));
+                    for(Map.Entry<String,Integer> entry : mapSB.entrySet()){
+                        System.out.println("task : " + entry.getKey() + " / total : " + entry.getValue());
                     }
                     System.out.println("----------------------------\n");
                 break;
@@ -135,8 +132,8 @@ public class Main{
                     taskLogs = inputPeriod(sc);
                     Map<String,Integer> mapSBP = tLService.sumByPeriodTaskLogs(taskLogs);
                     System.out.println("\n----------------------------");
-                    for(String key : mapSBP.keySet()){
-                        System.out.println("task : " + key + " / total : " + mapSBP.get(key));
+                    for(Map.Entry<String,Integer> entry : mapSBP.entrySet()){
+                        System.out.println("task : " + entry.getKey() + " / total : " + entry.getValue());
                     }
                     System.out.println("----------------------------\n");
                 break;
@@ -144,19 +141,26 @@ public class Main{
                 // 8 : タスク検索
                 case 8:
                     taskLogs = inputKeyword(sc);
-                    String task = "";
                     System.out.println("\n----------------------------");
                     for(TaskLog tl : taskLogs){
-                        //System.out.println(tl);
-                        task = tService.findById(tl.getTaskId());
+                        String task = tService.findById(tl.getTaskId());
                         System.out.print("taskName : " + task + " , ");
                         System.out.println(tl);
                     }
                     System.out.println("----------------------------\n");
                 break;
                     
-                // 9 : 終了
+                // 9 : 集計結果ソート
                 case 9 :
+                    List<Map.Entry<String,Integer>> mapToList = inputSelect(sc);
+
+                    for(Map.Entry<String,Integer> entry : mapToList){
+                        System.out.println("task : " + entry.getKey() + " , minute : " + entry.getValue());
+                    }
+                break;
+
+                // 99 : 終了
+                case 99 :
                     System.out.println("終了します");
                 return;
 
@@ -176,7 +180,7 @@ public class Main{
     
     static TaskLog inputTaskLog(Scanner sc){
         System.out.print("date ? : ");
-        System.out.print("※入力形式は、\"****-**-**\"　としてください");
+        System.out.println("※入力形式は、\"****-**-**\"　としてください");
         String date = sc.nextLine();
         System.out.print("minutes ? : ");
         int minutes = sc.nextInt();
@@ -203,10 +207,41 @@ public class Main{
         return tLService.periodTaskLogs(from,to);
     }
     
+    // タスク検索
     static List<TaskLog> inputKeyword(Scanner sc){
         System.out.println("検索したいタスク名を入力してください : ");
         String keyword = sc.nextLine();
         return tLService.searchByTaskName(keyword);
     }
+    
+    // ソート形式選択→
+    static List<Map.Entry<String,Integer>> inputSelect(Scanner sc){
+        boolean desc = false;
+        
+        while(true){
 
+            System.out.println("集計時間をソートします : ");
+            System.out.println("順番を選択してください : ");
+            System.out.println(" 0 : 昇順 , 1 : 降順");
+
+            int choice = sc.nextInt();
+            sc.nextLine();
+            
+            switch (choice) {
+                // 0 : 昇順
+                case 0:
+                    System.out.println("昇順を選択");
+                    desc = false;        
+                    return tLService.sortBySumByTime(desc);
+                    // 1 : 降順
+                case 1:
+                    System.out.println("降順を選択");
+                    desc = true;                    
+                    return tLService.sortBySumByTime(desc);
+                default:
+                    System.out.println("\"0\"か\"1\"のいずれかを入力してください");
+                break;
+            }
+        }
+    }
 }

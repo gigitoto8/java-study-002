@@ -43,7 +43,7 @@ public class TaskService {
 
     // タスク一覧取得
     public List<Task> getTasks(){
-        return tList;
+        return new ArrayList<>(tList);
     }
 
     // taskIdが存在するかチェック
@@ -58,7 +58,7 @@ public class TaskService {
 
     // TaskLog等のtaskIdからtaskNameを返す
     public String findById(int taskId){
-        String taskName = "";
+        String taskName = null;
         for(Task t : tList){
             if(taskId == t.getTaskId()){
                 taskName = t.getTask();

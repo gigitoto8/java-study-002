@@ -99,7 +99,6 @@ public class Main{
                 // 4 : ログ一覧表示
                 case 4:
                     List<TaskLog> taskLogs = tLService.getTaskLogs();
-                    taskLogs = tLService.getTaskLogs();
                     System.out.println("\n--------tasklog--------------------");
                     for(TaskLog t : taskLogs){
                         System.out.println(t);

@@ -35,7 +35,7 @@ public class TaskLogRepository {
                     
             //CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
             if(notExistFile || file.length() == 0){
-                bw.write("task_id,date,minutes,memo\n");
+                bw.write("taskLogId,taskId,date,minutes,memo\n");
             }
             //一行のデータを書き込む
             bw.write(taskLog.toCsv() + "\n");
@@ -71,18 +71,19 @@ public class TaskLogRepository {
             String line;
             while ((line = br.readLine()) != null) {                 
                 //1行目（カラム名）を無視
-                if(line.startsWith("task_id")){
+                if(line.startsWith("taskLogId")){
                     continue;
                 }
                 //","区切りで文字列を分解
                 String[] data = line.split(",");
-                int taskId = Integer.parseInt(data[0]);
-                String date = data[1];
-                int minutes = Integer.parseInt(data[2]);
-                //dataの要素数が3以上（data[3]が入力済）であるか否か
-                String memo = ((data.length > 3) ? data[3] : "");
-                //String memo = data[3];
-                TaskLog record = new TaskLog(taskId, date, minutes, memo);
+                int taskLogId = Integer.parseInt(data[0]);
+                int taskId = Integer.parseInt(data[1]);
+                String date = data[2];
+                int minutes = Integer.parseInt(data[3]);
+                String memo = data[4];
+                //dataの要素数が4よりも大きいか否か
+                //String memo = ((data.length > 4) ? data[4] : "");
+                TaskLog record = new TaskLog(taskLogId,taskId, date, minutes, memo);
                 //一行のデータをリストに加える
                 list.add(record);
             }

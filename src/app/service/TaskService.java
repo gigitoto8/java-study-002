@@ -22,6 +22,7 @@ public class TaskService {
         tRepository.saveTask(task); // ← ここで保存
     }
 
+    // コンソール入力データ保存時
     public void addTask(String task,String category){
         // インスタンス作成時、taskIdが自動生成される
         Task t = new Task(task, category);
@@ -29,16 +30,16 @@ public class TaskService {
     }
 
     // CSVファイルを読み込み、データをListに保存
+    // 併せて、使用済みtaskIdを取得
     public void loadTaskCSV(){
-        tList = tRepository.loadTasks();
+        this.tList = tRepository.loadTasks();
         int maxId = 0;
-        // 使用済みtaskIdを取得
         for(Task t : tList){
             if(t.getTaskId() > maxId){
                 maxId = t.getTaskId();
             }
         }
-        Task.setCount(maxId);
+        Task.setCountTaskId(maxId);
     }
 
     // タスク一覧取得

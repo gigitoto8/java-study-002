@@ -23,7 +23,7 @@ public class TaskLogService {
     private List<TaskLog> tLList = new ArrayList<>();
 
     // リスト保存とCSV保存
-    //実際にTaskIdが使われているかチェックできた場合、保存を実行。
+    // 実際にTaskIdが使われているかチェックできた場合、保存を実行。
     public void addTaskLog(TaskLog taskLog){
         if(tService.existById(taskLog.getTaskId())){
             tLList.add(taskLog);
@@ -39,13 +39,31 @@ public class TaskLogService {
     }
 
     // CSVファイルを読み込み、データをListに保存
+    // 併せて、使用済みtaskLogIdを取得
     public void loadTaskLogCSV(){
         this.tLList = tLRepository.loadTaskLogs();
+        int MaxId = 0;
+        for(TaskLog tL : tLList){
+            if(tL.getTaskLogId() > MaxId){
+                MaxId = tL.getTaskLogId();
+            }
+        }
+        TaskLog.setCountTaskId(MaxId);
     }
 
     // タスクログ一覧取得
     public List<TaskLog> getTaskLogs(){
         return  new ArrayList<>(tLList);
+    }
+
+    // taskIdが存在するかチェック
+    public boolean existById(int taskLogId){        
+        for(TaskLog tL : tLList){
+            if(tL.getTaskLogId() == taskLogId){
+                return true;
+            }
+        }
+        return false;
     }
     
     // タスク別時間集計

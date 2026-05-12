@@ -152,13 +152,13 @@ public class TaskLogService {
     public List<TaskLog> searchByTaskName(String keyword){
         List<TaskLog> sumByPeriodTL = new ArrayList<>();
         List<Task> tList = tService.getTasks();
-        int taskId = -1;        // 0にすると、0で検索される危険がある
+        // 検索ワードが含まれるタスクのIDを保存するリスト
+        List<Integer> taskIds = new ArrayList<>();
         // keywordに該当するtaskIdを抽出する
         int count = 0;
         for(Task t : tList){
             if(t.getTask().contains(keyword)){
-                taskId = t.getTaskId();
-                break;
+                taskIds.add(t.getTaskId());
             }else{
                 if(count == (tList.size() - 1)){
                     System.out.println("キーワードに該当するログは存在しません。");
@@ -168,7 +168,7 @@ public class TaskLogService {
         }
         // taskIdが一致するレコードを抽出する
         for(TaskLog tL : tLList){
-            if(tL.getTaskId() == taskId){
+            if(taskIds.contains(tL.getTaskId())){
                 sumByPeriodTL.add(tL);
             }
         }

@@ -10,13 +10,18 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaskLogRepository {
     
-    private static final String TASKLOG_FILE_PATH = "app/data/tasklog_record_001.csv";
-
+    // CSVファイル名および保存先
+    private static final String TASKLOG_FILE_PATH = "app/data/tasklog_record_002.csv";
+    // formatterを共通化
+    private static final DateTimeFormatter DATETIME_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     //File file = new File ・・・は
     //メソッド実行毎にクラス生成する
     
@@ -35,7 +40,7 @@ public class TaskLogRepository {
                     
             //CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
             if(notExistFile || file.length() == 0){
-                bw.write("taskLogId,taskId,date,minutes,memo\n");
+                bw.write("taskLogId,taskId,date,minutes,memo,createdAt,updatedAt\n");
             }
             //一行のデータを書き込む
             bw.write(taskLog.toCsv() + "\n");
@@ -58,7 +63,7 @@ public class TaskLogRepository {
         List<TaskLog> list = new ArrayList<>();
         //CSVファイルが存在しない場合、空のリストを戻しメソッドを終了させる
         if(notExistFile){
-            System.out.println("no data\n");
+            System.out.println("no TaskLog data\n");
             return list;
         }
 
@@ -83,7 +88,10 @@ public class TaskLogRepository {
                 String memo = data[4];
                 //dataの要素数が4よりも大きいか否か
                 //String memo = ((data.length > 4) ? data[4] : "");
-                TaskLog record = new TaskLog(taskLogId,taskId, date, minutes, memo);
+
+                LocalDateTime createdAt = LocalDateTime.parse(data[5], DATETIME_FORMATTER);
+                LocalDateTime updatedAt = LocalDateTime.parse(data[6], DATETIME_FORMATTER);
+                TaskLog record = new TaskLog(taskLogId,taskId, date, minutes, memo,createdAt,updatedAt);
                 //一行のデータをリストに加える
                 list.add(record);
             }

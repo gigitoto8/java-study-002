@@ -7,6 +7,7 @@ import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -73,8 +74,14 @@ public class Main{
                     Task tInput = inputTask(sc);
                     tService.addTask(tInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    tService.addTask("買い物","家事");
-                    tService.addTask("書類作成","仕事");                    
+                    tService.addTask("買い物","家事",
+                                    LocalDateTime.parse("2005-04-01T12:00:00"),
+                                    LocalDateTime.parse("2005-08-01T12:00:00"),
+                                    null);
+                    tService.addTask("書類作成","仕事",
+                                    LocalDateTime.parse("2015-01-01T12:00:00"),
+                                    LocalDateTime.parse("2015-04-01T12:00:00"),
+                                    null);    
                     break;
                                 
                 // 2 : ログ登録
@@ -82,8 +89,13 @@ public class Main{
                     TaskLog tLInput = inputTaskLog(sc);
                     tLService.addTaskLog(tLInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    tLService.addTaskLog(2,"2026-01-31",60,"洗濯");
-                    tLService.addTaskLog(3,"2026-02-15",120,"帳簿");        
+                    tLService.addTaskLog(2,"2026-01-31",60,"洗濯",
+                                        LocalDateTime.parse("2022-01-31T15:00:30"),
+                                        LocalDateTime.parse("2022-04-30T15:00:30")
+                    );
+                    tLService.addTaskLog(3,"2026-02-15",120,"帳簿",
+                                        LocalDateTime.parse("2022-02-28T15:00:30"),
+                                        LocalDateTime.parse("2022-05-31T15:00:30"));        
                 break;
 
                 // 3 : タスク一覧表示
@@ -169,14 +181,19 @@ public class Main{
         }
     }
 
+    // タスク　コンソール登録データ入力
     static Task inputTask(Scanner sc){
         System.out.print("task ? : ");
         String task = sc.nextLine();
         System.out.print("category ? : ");
-        String category = sc.nextLine();            
-        return new Task(task,category);
+        String category = sc.nextLine();        
+        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime updatedAt = LocalDateTime.now();
+        LocalDateTime deletedAt = null;
+        return new Task(task,category,createdAt,updatedAt,deletedAt);
     }
     
+    // タスクログ　コンソール登録データ入力
     static TaskLog inputTaskLog(Scanner sc){
         System.out.print("date ? : ");
         System.out.println("※入力形式は、\"****-**-**\"　としてください");
@@ -188,8 +205,10 @@ public class Main{
         String memo = sc.nextLine();
         System.out.print("ID ? : ");
         int taskId = sc.nextInt();
+        LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime updatedAt = LocalDateTime.now();
         sc.nextLine();
-        return new TaskLog(taskId,date,minutes,memo);
+        return new TaskLog(taskId,date,minutes,memo,createdAt,updatedAt);
     }
 
     // 期間指定入力

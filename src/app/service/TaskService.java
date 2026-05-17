@@ -2,6 +2,7 @@ package app.service;
 
 import app.model.Task;
 import app.repository.TaskRepository;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +24,9 @@ public class TaskService {
     }
 
     // コンソール入力データ保存時
-    public void addTask(String task,String category){
+    public void addTask(String task,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
         // インスタンス作成時、taskIdが自動生成される
-        Task t = new Task(task, category);
+        Task t = new Task(task, category,createdAt,updatedAt,deletedAt);
         addTask(t); // オーバーロード
     }
 

@@ -10,18 +10,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaskRepository {
     
-    private static final String TASK_FILE_PATH = "app/data/task_record_001.csv";
-
-    
+    // CSVファイル名および保存先
+    private static final String TASK_FILE_PATH = "app/data/task_record_002.csv";
+    // formatterを共通化
+    private static final DateTimeFormatter DATETIME_FORMATTER =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     public void saveTask(Task task){
         
         File file = new File(TASK_FILE_PATH);
-        //ファイル有無確認
+        // ファイル有無確認
         boolean notExistFile = !file.exists();
         
         try (BufferedWriter bw = new BufferedWriter(
@@ -29,9 +33,9 @@ public class TaskRepository {
                 new FileOutputStream(TASK_FILE_PATH, true),
                 StandardCharsets.UTF_8))) {
                     
-                    //CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
+                    // CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
             if(notExistFile || file.length() == 0){
-                bw.write("task_id,task,category\n");
+                bw.write("task_id,task,category,createdAt,updatedAt,deletedAt\n");
             }
             
             bw.write(task.toCsv() + "\n");
@@ -42,19 +46,19 @@ public class TaskRepository {
         }
     }
     
-    //ファイル読み込み
+    // ファイル読み込み
     public List<Task> loadTasks(){
         
         File file = new File(TASK_FILE_PATH);
-        //ファイル有無確認
+        // ファイル有無確認
         boolean notExistFile = !file.exists();
         
-        //リスト（読み込みデータを入れる箱）準備
+        // リスト（読み込みデータを入れる箱）準備
         List<Task> list = new ArrayList<>(); 
         
-        //CSVファイルが存在しない場合、空のリストを戻しメソッドを修了させる
+        // CSVファイルが存在しない場合、空のリストを戻しメソッドを終了させる
         if(notExistFile){
-            System.out.println("no data\n");
+            System.out.println("no Task data\n");
             return list;
         }
         try(BufferedReader br = new BufferedReader(
@@ -65,24 +69,28 @@ public class TaskRepository {
                     
             String line;
 
-            //ファイルの終わりまで一行ずつ読む。
+            // ファイルの終わりまで一行ずつ読む。
             while((line = br.readLine()) != null){
 
-                //1行目（カラム名）を無視
+                // 1行目（カラム名）を無視
                 if(line.startsWith("task_id")){
                     continue;
                 }
 
-                //","区切りで文字列を分解
+                // ","区切りで文字列を分解
                 String[] data = line.split(",");
 
                 int taskId = Integer.parseInt(data[0]);
                 String task = data[1];
                 String category = data[2];
-
-                //オブジェクト化
-                Task record = new Task(taskId, task, category);
-                //listに追加
+                LocalDateTime createdAt = LocalDateTime.parse(data[3],DATETIME_FORMATTER);
+                LocalDateTime updatedAt = LocalDateTime.parse(data[4],DATETIME_FORMATTER);
+                // deleteAtがnullである場合はnullを、そうでない場合は日付データを代入する
+                LocalDateTime deletedAt = data[5].equals("null") ? 
+                                                null : LocalDateTime.parse(data[5],DATETIME_FORMATTER);
+                // オブジェクト化
+                Task record = new Task(taskId, task, category,createdAt,updatedAt,deletedAt);
+                // listに追加
                 list.add(record);
             }
         } catch (IOException e){

@@ -3,6 +3,8 @@ package app.service;
 import app.model.Task;
 import app.model.TaskLog;
 import app.repository.TaskLogRepository;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,8 +35,8 @@ public class TaskLogService {
         }
     }
 
-    public void addTaskLog(int taskId,String date,int minutes,String memo){
-            TaskLog tl = new TaskLog(taskId,date,minutes,memo);
+    public void addTaskLog(int taskId,String date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
+            TaskLog tl = new TaskLog(taskId,date,minutes,memo,createdAt,updatedAt);
             addTaskLog(tl); //オーバーロード
     }
 

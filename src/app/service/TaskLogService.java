@@ -77,24 +77,24 @@ public class TaskLogService {
         List<Task> tList = tService.getTasks();
         //taskMapにTaskデータを保存
         for(Task t : tList){
-            taskMap.put(t.getTaskId(),t.getTask());
+            taskMap.put(t.getTaskId(),t.getTaskName());
         }
 
         // 
         for(TaskLog tL : tLList){
             // TaskデータのtaskIdと一致する場合、紐づいたtask名を取得する
-            String task = taskMap.get(tL.getTaskId());
+            String taskNumById = taskMap.get(tL.getTaskId());
             // ↓taskが見つからない場合は下記の処理。nullがmapに入ってしまうのは好ましくない
-            if(task == null){
+            if(taskNumById == null){
                 continue;
             }
 
             int minutes = tL.getMInutes();
             
-            if(result.containsKey(task)){
-                result.put(task,result.get(task) + minutes);
+            if(result.containsKey(taskNumById)){
+                result.put(taskNumById,result.get(taskNumById) + minutes);
             }else{
-                result.put(task,minutes);
+                result.put(taskNumById,minutes);
             }
         }
         return result;
@@ -129,7 +129,7 @@ public class TaskLogService {
         List<Task> tList = tService.getTasks();
         //taskMapにTaskデータを保存
         for(Task t : tList){
-            taskMap.put(t.getTaskId(),t.getTask());
+            taskMap.put(t.getTaskId(),t.getTaskName());
         }
 
         for(TaskLog tL : tLList){
@@ -159,7 +159,7 @@ public class TaskLogService {
         // keywordに該当するtaskIdを抽出する
         int count = 0;
         for(Task t : tList){
-            if(t.getTask().contains(keyword)){
+            if(t.getTaskName().contains(keyword)){
                 taskIds.add(t.getTaskId());
             }else{
                 if(count == (tList.size() - 1)){

@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class Task {
     
     private int taskId;
-    private String task;
+    private String taskName;
     private String category;
     private LocalDateTime createdAt;
     private LocalDateTime deletedAt;
@@ -18,11 +18,11 @@ public class Task {
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     // コンストラクタ、コンソール入力データ登録時
-    public Task(String task,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
+    public Task(String taskName,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
         // インスタンス作成時、taskIdが自動生成される
         counter++;
         this.taskId = counter;
-        this.task = task;
+        this.taskName = taskName;
         this.category = category;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -30,9 +30,9 @@ public class Task {
     }
 
     // コンストラクタ、CSVデータ読込時
-    public Task(int taskId,String task,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
+    public Task(int taskId,String taskName,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
         this.taskId = taskId;
-        this.task = task;
+        this.taskName = taskName;
         this.category = category;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -40,12 +40,12 @@ public class Task {
     }
 
     public int getTaskId(){return taskId;}
-    public String getTask(){return task;}
+    public String getTaskName(){return taskName;}
     public String getCategory(){return category;}
     public LocalDateTime getCreatedAt(){return createdAt;}
     public LocalDateTime getUpdatedAt(){return updatedAt;}
     public LocalDateTime getDeletedAt(){return deletedAt;}
-    public void setTask(String task){this.task = task;}
+    public void setTaskName(String taskName){this.taskName = taskName;}
     public void setCategory(String category){this.category = category;}
     public void setCreatedAt(LocalDateTime createdAt){this.createdAt = createdAt;}
     public void setUpdatedAt(LocalDateTime updatedAt){this.updatedAt = updatedAt;}
@@ -56,7 +56,7 @@ public class Task {
 
     // 形式を定めてCSVに保存する
     public String toCsv(){
-        return taskId + "," + task + "," + category + "," 
+        return taskId + "," + taskName + "," + category + "," 
                 + createdAt.format(DATETIME_FORMATTER) + "," 
                 + updatedAt.format(DATETIME_FORMATTER) + "," 
                 // 新規登録時はnullを、論理削除済で日付が入っている場合はString形式に変換したものを返す
@@ -68,8 +68,8 @@ public class Task {
     public String toString(){
         // フォーマット
         return String.format(
-            "taskId : %d , task : %s , category : %s , createdAt : %s , updatedAt : %s , deletedAt : %s",
-            taskId, task, category, 
+            "taskId : %d , taskName : %s , category : %s , createdAt : %s , updatedAt : %s , deletedAt : %s",
+            taskId, taskName, category, 
             createdAt.format(DATETIME_FORMATTER),
             updatedAt.format(DATETIME_FORMATTER),
             // deleteAtがnullである場合はnullを、そうでない場合は日付データを代入する

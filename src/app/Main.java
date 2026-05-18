@@ -123,7 +123,7 @@ public class Main{
                     Map<String,Integer> mapSB = tLService.sumByTaskLogs();
                     System.out.println("\n--------result--------------------");
                     for(Map.Entry<String,Integer> entry : mapSB.entrySet()){
-                        System.out.println("task : " + entry.getKey() + " / total : " + entry.getValue());
+                        System.out.println("taskName : " + entry.getKey() + " / total : " + entry.getValue());
                     }
                     System.out.println("----------------------------\n");
                 break;
@@ -144,7 +144,7 @@ public class Main{
                     Map<String,Integer> mapSBP = tLService.sumByPeriodTaskLogs(taskLogs);
                     System.out.println("\n----------------------------");
                     for(Map.Entry<String,Integer> entry : mapSBP.entrySet()){
-                        System.out.println("task : " + entry.getKey() + " / total : " + entry.getValue());
+                        System.out.println("taskName : " + entry.getKey() + " / total : " + entry.getValue());
                     }
                     System.out.println("----------------------------\n");
                 break;
@@ -154,8 +154,9 @@ public class Main{
                     taskLogs = inputKeyword(sc);
                     System.out.println("\n----------------------------");
                     for(TaskLog tl : taskLogs){
-                        String task = tService.findById(tl.getTaskId());
-                        System.out.print("taskName : " + task + " , ");
+                        //String task = tService.findById(tl.getTaskId());
+                        String taskName = (tService.findById(tl.getTaskId())).getTaskName();
+                        System.out.print("taskName : " + taskName + " , ");
                         System.out.println(tl);
                     }
                     System.out.println("----------------------------\n");
@@ -184,13 +185,13 @@ public class Main{
     // タスク　コンソール登録データ入力
     static Task inputTask(Scanner sc){
         System.out.print("task ? : ");
-        String task = sc.nextLine();
+        String taskName = sc.nextLine();
         System.out.print("category ? : ");
         String category = sc.nextLine();        
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
         LocalDateTime deletedAt = null;
-        return new Task(task,category,createdAt,updatedAt,deletedAt);
+        return new Task(taskName,category,createdAt,updatedAt,deletedAt);
     }
     
     // タスクログ　コンソール登録データ入力

@@ -58,15 +58,13 @@ public class TaskService {
         return false;
     }
 
-    // TaskLog等のtaskIdからtaskNameを返す
-    public String findById(int taskId){
-        String taskName = null;
+    // taskIdを渡して、該当するTaskLogオブジェクトを返す
+    public Task findById(int taskId){
         for(Task t : tList){
-            if(taskId == t.getTaskId()){
-                taskName = t.getTask();
-                break;
+            if(t.getTaskId() == taskId){
+                return t;
             }
         }
-        return taskName;
+        return null;
     }
 }

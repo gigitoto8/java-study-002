@@ -67,4 +67,12 @@ public class TaskService {
         }
         return null;
     }
+
+    // リスト内の任意のIDに対し、taskNameを変更する。
+    public void setTaskName(int targetId,String targetText){
+        Task targetTask = findById(targetId);
+        targetTask.setTaskName(targetText);
+        targetTask.setUpdatedAt(LocalDateTime.now());
+        tRepository.saveAll(tList);
+    }
 }

@@ -55,7 +55,7 @@ public class Main{
                       3 : タスク一覧表示 \n  4 : ログ一覧表示 
                       5 : タスク別時間集計 \n  6 : 期間指定
                       7 : 期間指定タスク別時間集計 \n  8 : タスク検索
-                      9 : 集計結果ソート \n 
+                      9 : 集計結果ソート \n  10 : タスク名変更
                      99 : 終了
                     """);
 
@@ -171,6 +171,18 @@ public class Main{
                     }
                 break;
 
+                //10 更新（TaskのtaskName）
+                case 10:
+                    String column = "タスク名";   
+                    int id = inputId(column, sc);
+                    String text = inputText(column,sc);
+                    tService.setTaskName(id,text);
+                    System.out.println("\n--------task--------------------");
+                    System.out.println("以下の通り変更しました");
+                    System.out.println(tService.findById(id));
+                    System.out.println("--------task--------------------\n");
+                    break;
+
                 // 99 : 終了
                 case 99 :
                     System.out.println("終了します");
@@ -262,5 +274,22 @@ public class Main{
                 break;
             }
         }
+    }
+
+    // ID入力
+    static int inputId(String column,Scanner sc){
+        System.out.println(column + "を変更したいtaskIdを入力してください。");
+        System.out.println("Id? : ");
+        int targetId = sc.nextInt();
+        sc.nextLine();
+        return targetId;
+    }
+
+    // 変更後文字列入力
+    static String inputText(String column,Scanner sc){
+        System.out.println("変更後の" + column + "を入力してください。");
+        System.out.println("変更後" + column + " : ");
+        String newText = sc.nextLine();
+        return newText;
     }
 }

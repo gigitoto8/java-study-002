@@ -22,6 +22,8 @@ public class TaskRepository {
     // formatterを共通化
     private static final DateTimeFormatter DATETIME_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+    // CSVファイルに追記
     public void saveTask(Task task){
         
         File file = new File(TASK_FILE_PATH);
@@ -35,7 +37,7 @@ public class TaskRepository {
                     
                     // CSVファイルが存在しない場合、またはファイルの中身が空である場合、ヘッダを１行目に挿入する。
             if(notExistFile || file.length() == 0){
-                bw.write("task_id,task,category,createdAt,updatedAt,deletedAt\n");
+                bw.write("task_id,taskName,category,createdAt,updatedAt,deletedAt\n");
             }
             
             bw.write(task.toCsv() + "\n");
@@ -46,7 +48,7 @@ public class TaskRepository {
         }
     }
     
-    // ファイル読み込み
+    // CSVファイル読み込み
     public List<Task> loadTasks(){
         
         File file = new File(TASK_FILE_PATH);
@@ -99,4 +101,23 @@ public class TaskRepository {
         return list;
     }
 
+    // CSVファイルを上書き更新
+    public void saveAll(List<Task> tList){
+        
+        File file = new File(TASK_FILE_PATH);
+        
+        try (BufferedWriter bw = new BufferedWriter(
+            new OutputStreamWriter(
+                new FileOutputStream(TASK_FILE_PATH, false),
+                StandardCharsets.UTF_8))) {
+
+            for(Task task : tList){
+                bw.write(task.toCsv() + "\n");
+            }
+            System.out.println("上書きしました");
+        } catch (IOException e) {
+            System.out.println("ファイル書き込みエラー");
+            e.printStackTrace();
+        }
+    }
 }

@@ -58,7 +58,7 @@ public class TaskLogService {
         return  new ArrayList<>(tLList);
     }
 
-    // taskIdが存在するかチェック
+    // taskLogIdが存在するかチェック
     public boolean existById(int taskLogId){        
         for(TaskLog tL : tLList){
             if(tL.getTaskLogId() == taskLogId){
@@ -66,6 +66,16 @@ public class TaskLogService {
             }
         }
         return false;
+    }
+
+    // taskLogIdを渡して、該当するTaskLogオブジェクトを渡す
+    public TaskLog findById(int taskLogId){
+        for (TaskLog tL : tLList) {
+            if(tL.getTaskLogId() == taskLogId){
+                return tL;
+            }
+        }
+        return null;
     }
     
     // タスク別時間集計
@@ -197,5 +207,13 @@ public class TaskLogService {
         });
         return mapToList;
     }
+
+    // リスト内のIDに該当するdateを変更する。
+    public void resetDate(int taskLogId,String value){
+        TaskLog targetTaskLog = findById(taskLogId);
+        targetTaskLog.setDate(value);
+        targetTaskLog.setUpdatedAt(LocalDateTime.now());
+        tLRepository.saveAll(tLList);
+    }  
 
 }

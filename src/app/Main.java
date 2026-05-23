@@ -56,6 +56,7 @@ public class Main{
                       5 : タスク別時間集計 \n  6 : 期間指定
                       7 : 期間指定タスク別時間集計 \n  8 : タスク検索
                       9 : 集計結果ソート \n  10 : タスク名変更
+                      11 : ログ日時変更
                      99 : 終了
                     """);
 
@@ -171,7 +172,7 @@ public class Main{
                     }
                 break;
 
-                //10 更新（TaskのtaskName）
+                //10 更新（Task:taskName）
                 case 10:
                     String column = "タスク名";   
                     int id = inputId(column, sc);
@@ -181,6 +182,22 @@ public class Main{
                     System.out.println("以下の通り変更しました");
                     System.out.println(tService.findById(id));
                     System.out.println("--------task--------------------\n");
+                    break;
+
+                //11 更新（TaskLog:date）
+                case 11:
+                    column = "ログ日時";   
+                    id = inputId(column, sc);
+                    text = inputText(column,sc);
+                    if(tLService.existById(id)){
+                        tLService.resetDate(id,text);
+                        System.out.println("\n--------task--------------------");
+                        System.out.println("以下の通り変更しました");
+                        System.out.println(tLService.findById(id));
+                        System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
                     break;
 
                 // 99 : 終了

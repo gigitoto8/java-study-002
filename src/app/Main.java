@@ -177,11 +177,15 @@ public class Main{
                     String column = "タスク名";   
                     int id = inputId(column, sc);
                     String text = inputText(column,sc);
-                    tService.setTaskName(id,text);
-                    System.out.println("\n--------task--------------------");
-                    System.out.println("以下の通り変更しました");
-                    System.out.println(tService.findById(id));
-                    System.out.println("--------task--------------------\n");
+                    if(tService.existById(id)){
+                        tService.resetTaskName(id,text);
+                        System.out.println("\n--------task--------------------");
+                        System.out.println("以下の通り変更しました");
+                        System.out.println(tService.findById(id));
+                        System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
                     break;
 
                 //11 更新（TaskLog:date）

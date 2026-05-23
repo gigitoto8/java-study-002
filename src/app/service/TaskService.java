@@ -68,8 +68,8 @@ public class TaskService {
         return null;
     }
 
-    // リスト内の任意のIDに対し、taskNameを変更する。
-    public void setTaskName(int targetId,String targetText){
+    // リスト内のIDに該当するtaskNameを変更する。
+    public void resetTaskName(int targetId,String targetText){
         Task targetTask = findById(targetId);
         targetTask.setTaskName(targetText);
         targetTask.setUpdatedAt(LocalDateTime.now());

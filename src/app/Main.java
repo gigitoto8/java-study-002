@@ -51,13 +51,14 @@ public class Main{
             
             System.out.println("実行したい機能を選択してください");
             System.out.println("""
-                      1 : タスク登録 \n  2 : ログ登録 
-                      3 : タスク一覧表示 \n  4 : ログ一覧表示 
-                      5 : タスク別時間集計 \n  6 : 期間指定
-                      7 : 期間指定タスク別時間集計 \n  8 : タスク検索
-                      9 : 集計結果ソート \n  10 : タスク名変更
-                      11 : ログ日時変更
-                     99 : 終了
+                    -   1 : タスク登録 \n-   2 : ログ登録 
+                    -   3 : タスク一覧表示 \n-   4 : ログ一覧表示 
+                    -   5 : タスク別時間集計 \n-   6 : 期間指定
+                    -   7 : 期間指定タスク別時間集計 \n-   8 : タスク検索
+                    -   9 : 集計結果ソート \n-  10 : Task タスク名変更
+                    -  11 : Task カテゴリー変更 \n-  12 : TaskLog ログ日付変更
+                    -  13 : TaskLog 所要時間変更 \n-  14 : メモ変更
+                    -  99 : 終了
                     """);
 
             // 整数以外を入力した場合の処理
@@ -188,13 +189,61 @@ public class Main{
                     }
                     break;
 
-                //11 更新（TaskLog:date）
+                //11 更新（Task:category）
                 case 11:
+                    column = "カテゴリー";   
+                    id = inputId(column, sc);
+                    text = inputText(column,sc);
+                    if(tService.existById(id)){
+                        tService.resetCategory(id,text);
+                        System.out.println("\n--------task--------------------");
+                        System.out.println("以下の通り変更しました");
+                        System.out.println(tService.findById(id));
+                        System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
+                    break;
+
+                //12 更新（TaskLog:date）
+                case 12:
                     column = "ログ日時";   
                     id = inputId(column, sc);
                     text = inputText(column,sc);
                     if(tLService.existById(id)){
                         tLService.resetDate(id,text);
+                        System.out.println("\n--------task--------------------");
+                        System.out.println("以下の通り変更しました");
+                        System.out.println(tLService.findById(id));
+                        System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
+                    break;
+
+                //13 更新（TaskLog:minutes）
+                case 13:
+                    column = "所要時間";   
+                    id = inputId(column, sc);
+                    int value = inputValue(column,sc);
+                    if(tLService.existById(id)){
+                        tLService.resetMinutes(id,value);
+                        System.out.println("\n--------task--------------------");
+                        System.out.println("以下の通り変更しました");
+                        System.out.println(tLService.findById(id));
+                        System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
+                    break;
+
+                //14 更新（TaskLog:memo）
+                case 14:
+                    column = "メモ";   
+                    id = inputId(column, sc);
+                    text = inputText(column,sc);
+                    if(tLService.existById(id)){
+                        tLService.resetMemo(id,text);
                         System.out.println("\n--------task--------------------");
                         System.out.println("以下の通り変更しました");
                         System.out.println(tLService.findById(id));
@@ -299,7 +348,7 @@ public class Main{
 
     // ID入力
     static int inputId(String column,Scanner sc){
-        System.out.println(column + "を変更したいtaskIdを入力してください。");
+        System.out.println(column + "を変更したいIDを入力してください。");
         System.out.println("Id? : ");
         int targetId = sc.nextInt();
         sc.nextLine();
@@ -312,5 +361,14 @@ public class Main{
         System.out.println("変更後" + column + " : ");
         String newText = sc.nextLine();
         return newText;
+    }
+
+    // 変更後数値入力
+    static int inputValue(String column,Scanner sc){
+        System.out.println("変更後の" + column + "を入力してください。");
+        System.out.println("変更後" + column + " : ");
+        int value = sc.nextInt();
+        sc.nextLine();
+        return value;
     }
 }

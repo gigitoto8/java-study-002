@@ -69,9 +69,17 @@ public class TaskService {
     }
 
     // リスト内のIDに該当するtaskNameを変更する。
-    public void resetTaskName(int targetId,String targetText){
+    public void resetTaskName(int targetId,String text){
         Task targetTask = findById(targetId);
-        targetTask.setTaskName(targetText);
+        targetTask.setTaskName(text);
+        targetTask.setUpdatedAt(LocalDateTime.now());
+        tRepository.saveAll(tList);
+    }
+
+    // リスト内のIDに該当するcategoryを変更する。
+    public void resetCategory(int targetId,String text){
+        Task targetTask = findById(targetId);
+        targetTask.setCategory(text);
         targetTask.setUpdatedAt(LocalDateTime.now());
         tRepository.saveAll(tList);
     }

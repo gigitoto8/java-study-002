@@ -209,11 +209,27 @@ public class TaskLogService {
     }
 
     // リスト内のIDに該当するdateを変更する。
-    public void resetDate(int taskLogId,String value){
+    public void resetDate(int taskLogId,String text){
         TaskLog targetTaskLog = findById(taskLogId);
-        targetTaskLog.setDate(value);
+        targetTaskLog.setDate(text);
         targetTaskLog.setUpdatedAt(LocalDateTime.now());
         tLRepository.saveAll(tLList);
     }  
-
+    
+    // リスト内のIDに該当するdateを変更する。
+    public void resetMinutes(int taskLogId,int value){
+        TaskLog targetTaskLog = findById(taskLogId);
+        targetTaskLog.setMinutes(value);
+        targetTaskLog.setUpdatedAt(LocalDateTime.now());
+        tLRepository.saveAll(tLList);
+    }  
+    
+    // リスト内のIDに該当するdateを変更する。
+    public void resetMemo(int taskLogId,String text){
+        TaskLog targetTaskLog = findById(taskLogId);
+        targetTaskLog.setMemo(text);
+        targetTaskLog.setUpdatedAt(LocalDateTime.now());
+        tLRepository.saveAll(tLList);
+    }  
+    
 }

@@ -18,7 +18,7 @@ import java.util.List;
 public class TaskLogRepository {
     
     // CSVファイル名および保存先
-    private static final String TASKLOG_FILE_PATH = "app/data/tasklog_record_002.csv";
+    private static final String TASKLOG_FILE_PATH = "app/data/tasklog_record_003.csv";
     // formatterを共通化
     private static final DateTimeFormatter DATETIME_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
@@ -27,7 +27,7 @@ public class TaskLogRepository {
     // アプリ起動時のファイル有無
     boolean existFile = false;
     
-    // ファイル書き込み
+    // CSVファイルファイル書き込み
     public void saveTaskLog(TaskLog taskLog){
         
         // ファイル指定
@@ -54,7 +54,7 @@ public class TaskLogRepository {
         }
     }
             
-    // ファイル読み込み
+    // CSVファイル読み込み
     public List<TaskLog> loadTaskLogs(){
 
         // ファイル指定

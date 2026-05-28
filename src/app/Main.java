@@ -57,7 +57,8 @@ public class Main{
                     -   7 : 期間指定タスク別時間集計 \n-   8 : タスク検索
                     -   9 : 集計結果ソート \n-  10 : Task タスク名変更
                     -  11 : Task カテゴリー変更 \n-  12 : TaskLog ログ日付変更
-                    -  13 : TaskLog 所要時間変更 \n-  14 : メモ変更
+                    -  13 : TaskLog 実施時間変更 \n-  14 : TaskLog メモ変更
+                    -  15 : Task インスタンス削除 \n-  16 : TaskLog インスタンス削除
                     -  99 : 終了
                     """);
 
@@ -210,12 +211,14 @@ public class Main{
                     column = "ログ日時";   
                     id = inputId(column, sc);
                     text = inputText(column,sc);
-                    if(tLService.existById(id)){
-                        tLService.resetDate(id,text);
-                        System.out.println("\n--------task--------------------");
+                    TaskLog tempTL = tLService.resetDate(id,text);
+                    // 論理削除済みのtaskIdの場合、resetDateの戻り値はnullとなる
+                    // Taskインスタンスが戻った（nullでない）場合、インスタンスをリストに含める。
+                    if(tempTL != null){
+                        System.out.println("\n--------taskLog--------------------");
                         System.out.println("以下の通り変更しました");
                         System.out.println(tLService.findById(id));
-                        System.out.println("--------task--------------------\n");
+                        System.out.println("--------taskLog--------------------\n");
                     }else{
                         System.out.println("CSVファイルまたは所定のIDが存在しません");
                     }
@@ -223,15 +226,15 @@ public class Main{
 
                 //13 更新（TaskLog:minutes）
                 case 13:
-                    column = "所要時間";   
+                    column = "実施時間";   
                     id = inputId(column, sc);
                     int value = inputValue(column,sc);
                     if(tLService.existById(id)){
                         tLService.resetMinutes(id,value);
-                        System.out.println("\n--------task--------------------");
+                        System.out.println("\n--------taskLog--------------------");
                         System.out.println("以下の通り変更しました");
                         System.out.println(tLService.findById(id));
-                        System.out.println("--------task--------------------\n");
+                        System.out.println("--------taskLog--------------------\n");
                     }else{
                         System.out.println("CSVファイルまたは所定のIDが存在しません");
                     }
@@ -244,10 +247,36 @@ public class Main{
                     text = inputText(column,sc);
                     if(tLService.existById(id)){
                         tLService.resetMemo(id,text);
-                        System.out.println("\n--------task--------------------");
+                        System.out.println("\n--------taskLog--------------------");
                         System.out.println("以下の通り変更しました");
                         System.out.println(tLService.findById(id));
+                        System.out.println("--------taskLog--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
+                    break;
+
+                //15 Task削除
+                case 15:
+                    id = inputId(sc);
+                    if(tService.existById(id)){
+                        System.out.println("\n--------task--------------------");
+                        System.out.println(tService.deleteTask(id));
+                        System.out.println("以上のインスタンスを削除しました");
                         System.out.println("--------task--------------------\n");
+                    }else{
+                        System.out.println("CSVファイルまたは所定のIDが存在しません");
+                    }
+                    break;
+
+                //16 TaskLog削除
+                case 16:
+                    id = inputId(sc);
+                    if(tLService.existById(id)){
+                        System.out.println("\n--------taskLog--------------------");
+                        System.out.println(tLService.deleteTaskLog(id));
+                        System.out.println("以上のインスタンスを削除しました");
+                        System.out.println("--------taskLog--------------------\n");
                     }else{
                         System.out.println("CSVファイルまたは所定のIDが存在しません");
                     }
@@ -346,7 +375,7 @@ public class Main{
         }
     }
 
-    // ID入力
+    // 変更ID入力
     static int inputId(String column,Scanner sc){
         System.out.println(column + "を変更したいIDを入力してください。");
         System.out.println("Id? : ");
@@ -359,8 +388,8 @@ public class Main{
     static String inputText(String column,Scanner sc){
         System.out.println("変更後の" + column + "を入力してください。");
         System.out.println("変更後" + column + " : ");
-        String newText = sc.nextLine();
-        return newText;
+        String text = sc.nextLine();
+        return text;
     }
 
     // 変更後数値入力
@@ -370,5 +399,14 @@ public class Main{
         int value = sc.nextInt();
         sc.nextLine();
         return value;
+    }
+
+    // 削除ID入力
+    static int inputId(Scanner sc){
+        System.out.println("削除したいインスタンスのIDを入力してください。");
+        System.out.println("Id? : ");
+        int id = sc.nextInt();
+        sc.nextLine();        
+        return id;
     }
 }

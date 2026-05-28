@@ -14,7 +14,7 @@ public class TaskService {
         this.tRepository = tRepository;
     }
 
-    // Taskデータを保存するリスト
+    // Taskデータ原本を保存するリスト
     private List<Task> tList = new ArrayList<>();
 
     // リスト保存とCSV保存
@@ -43,14 +43,21 @@ public class TaskService {
         Task.setCountTaskId(maxId);
     }
 
-    // タスク一覧取得
+    // タスク一覧取得()
     public List<Task> getTasks(){
-        return new ArrayList<>(tList);
+        List<Task> showTList = new ArrayList<>();
+        for(Task sT : tList){
+            if(sT.getDeletedAt() == null){
+                showTList.add(sT);
+            }
+        }
+        return showTList;
     }
 
     // taskIdが存在するかチェック
     public boolean existById(int taskId){        
-        for(Task t : tList){
+        List<Task> tempTList = getTasks();
+        for(Task t : tempTList){
             if(t.getTaskId() == taskId){
                 return true;
             }
@@ -58,9 +65,10 @@ public class TaskService {
         return false;
     }
 
-    // taskIdを渡して、該当するTaskLogオブジェクトを返す
+    // taskIdを渡して、該当するTaskLogオブジェクトを返す 
     public Task findById(int taskId){
-        for(Task t : tList){
+        List<Task> tempTList = getTasks();
+        for(Task t : tempTList){
             if(t.getTaskId() == taskId){
                 return t;
             }
@@ -82,5 +90,13 @@ public class TaskService {
         targetTask.setCategory(text);
         targetTask.setUpdatedAt(LocalDateTime.now());
         tRepository.saveAll(tList);
+    }
+
+    // リスト内のIDに該当するインスタンスを削除する。戻り値はMainに表示させる内容として利用
+    public Task deleteTask(int taskId){
+        Task targetTask = findById(taskId);
+        targetTask.setDeletedAt(LocalDateTime.now());
+        tRepository.saveAll(tList);
+        return targetTask;
     }
 }

@@ -45,7 +45,7 @@ public class TaskLog {
     public int getTaskLogId() {return this.taskLogId;}
     public int getTaskId() {return this.taskId;}
     public String getDate(){return this.date;}
-    public int getMInutes() {return this.minutes;}
+    public int getMinutes() {return this.minutes;}
     public String getMemo(){return this.memo;}
     public LocalDateTime getCreatedAt(){return this.createdAt;}
     public LocalDateTime getUpdatedAt(){return this.updatedAt;}

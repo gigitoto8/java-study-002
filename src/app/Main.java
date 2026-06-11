@@ -7,6 +7,7 @@ import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -92,13 +93,13 @@ public class Main{
                     TaskLog tLInput = inputTaskLog(sc);
                     tLService.addTaskLog(tLInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    tLService.addTaskLog(2,"2026-01-31",60,"洗濯",
+                    tLService.addTaskLog(2,LocalDate.parse("2026-01-31"),60,"洗濯",
                                         LocalDateTime.parse("2022-01-31T15:00:30"),
                                         LocalDateTime.parse("2022-04-30T15:00:30")
                     );
-                    tLService.addTaskLog(3,"2026-02-15",120,"帳簿",
-                                        LocalDateTime.parse("2022-02-28T15:00:30"),
-                                        LocalDateTime.parse("2022-05-31T15:00:30"));        
+                    tLService.addTaskLog(3,LocalDate.parse("2026-02-15"),120,"帳簿",
+                    LocalDateTime.parse("2022-02-28T15:00:30"),
+                    LocalDateTime.parse("2022-05-31T15:00:30"));        
                 break;
 
                 // 3 : タスク一覧表示
@@ -210,8 +211,8 @@ public class Main{
                 case 12:
                     column = "ログ日時";   
                     id = inputId(column, sc);
-                    text = inputText(column,sc);
-                    TaskLog tempTL = tLService.resetDate(id,text);
+                    LocalDate date = inputLocalDate(column,sc);
+                    TaskLog tempTL = tLService.resetDate(id,date);
                     // 論理削除済みのtaskIdの場合、resetDateの戻り値はnullとなる
                     // Taskインスタンスが戻った（nullでない）場合、インスタンスをリストに含める。
                     if(tempTL != null){
@@ -309,7 +310,7 @@ public class Main{
     static TaskLog inputTaskLog(Scanner sc){
         System.out.print("date ? : ");
         System.out.println("※入力形式は、\"****-**-**\"　としてください");
-        String date = sc.nextLine();
+        LocalDate date = LocalDate.parse(sc.nextLine());
         System.out.print("minutes ? : ");
         int minutes = sc.nextInt();
         sc.nextLine();
@@ -329,11 +330,11 @@ public class Main{
         System.out.println("開始日を指定してください");
         System.out.println("※指定しない場合は入力せず、enterキーを押してください");
         System.out.print("start date ? : ");
-        String from = sc.nextLine();
+        LocalDate from = LocalDate.parse(sc.nextLine());
         System.out.println("終了日を指定してください");
         System.out.println("※指定しない場合は入力せず、enterキーを押してください");
         System.out.print("end date ? : ");
-        String to = sc.nextLine();
+        LocalDate to = LocalDate.parse(sc.nextLine());
         return tLService.periodTaskLogs(from,to);
     }
     
@@ -391,7 +392,7 @@ public class Main{
         String text = sc.nextLine();
         return text;
     }
-
+    
     // 変更後数値入力
     static int inputValue(String column,Scanner sc){
         System.out.println("変更後の" + column + "を入力してください。");
@@ -400,7 +401,18 @@ public class Main{
         sc.nextLine();
         return value;
     }
+    
+    // 変更後文字列入力
+    static LocalDate inputLocalDate(String column,Scanner sc){
+        System.out.println("変更後の" + column + "を入力してください。");
+        System.out.println("変更後" + column + " : ");
 
+        String text = sc.nextLine();
+        LocalDate date = LocalDate.parse(text);
+
+        return date;
+    }
+    
     // 削除ID入力
     static int inputId(Scanner sc){
         System.out.println("削除したいインスタンスのIDを入力してください。");

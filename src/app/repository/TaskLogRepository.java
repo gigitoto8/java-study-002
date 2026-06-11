@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class TaskLogRepository {
                 String[] data = line.split(",");
                 int taskLogId = Integer.parseInt(data[0]);
                 int taskId = Integer.parseInt(data[1]);
-                String date = data[2];
+                LocalDate date = LocalDate.parse(data[2]);
                 int minutes = Integer.parseInt(data[3]);
                 String memo = data[4];
                 // dataの要素数が4よりも大きいか否か

@@ -1,5 +1,6 @@
 package app.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -7,7 +8,7 @@ public class TaskLog {
     
     private int taskLogId;
     private int taskId;
-    private String date;
+    private LocalDate date;
     private int minutes;
     private String memo;
     private LocalDateTime createdAt;
@@ -19,7 +20,7 @@ public class TaskLog {
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
    // コンストラクタ、コンソール入力データ保存時
-    public TaskLog(int taskId,String date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
+    public TaskLog(int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
         //インスタンス作成時、taskLogIdが自動生成される
         counter++;
         this.taskLogId = counter;
@@ -32,7 +33,7 @@ public class TaskLog {
     }
 
     // コンストラクタ、CSVデータ読込時
-    public TaskLog(int taskLogId,int taskId,String date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
+    public TaskLog(int taskLogId,int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
         this.taskLogId = taskLogId;
         this.taskId = taskId;
         this.date = date;
@@ -44,14 +45,14 @@ public class TaskLog {
 
     public int getTaskLogId() {return this.taskLogId;}
     public int getTaskId() {return this.taskId;}
-    public String getDate(){return this.date;}
+    public LocalDate getDate(){return this.date;}
     public int getMinutes() {return this.minutes;}
     public String getMemo(){return this.memo;}
     public LocalDateTime getCreatedAt(){return this.createdAt;}
     public LocalDateTime getUpdatedAt(){return this.updatedAt;}
 
     public void setTaskId(int taskId){this.taskId = taskId;}
-    public void setDate(String date){this.date = date;}
+    public void setDate(LocalDate date){this.date = date;}
     public void setMinutes(int minutes){this.minutes = minutes;}
     public void setMemo(String memo){this.memo = memo;}
     public void setCreatedAt(LocalDateTime createdAt){this.createdAt = createdAt;}

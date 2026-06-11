@@ -4,6 +4,7 @@ import app.model.Task;
 import app.model.TaskLog;
 import app.repository.TaskLogRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -50,9 +51,13 @@ public class TaskLogService {
     }
 
     // データ追記　オーバーロード
-    public void addTaskLog(int taskId,String date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
+    public void addTaskLog(int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
+        if(tService.existById(taskId)){
             TaskLog tl = new TaskLog(taskId,date,minutes,memo,createdAt,updatedAt);
             addTaskLog(tl); //オーバーロード
+        }else{
+            System.out.println("taskId \"" + taskId + "\" は存在しませ-ん");
+        }
     }
 
     // タスクログ一覧取得（タスク側で論理削除済IDに係るデータを除外）
@@ -128,15 +133,15 @@ public class TaskLogService {
     }
 
     // 6:期間指定ログ一覧 ※※※後で、Main側の処理を統一させる必要がある。※※※
-    public List<TaskLog> periodTaskLogs(String from,String to){
+    public List<TaskLog> periodTaskLogs(LocalDate from,LocalDate to){
         // 戻り値用変数
         List<TaskLog> periodTL = new ArrayList<>();
         // 開始日または終了日が未入力の場合、それぞれ最大値または最小値を代入
-        if(from.isEmpty()){
-            from = "0000-00-00";
+        if(from == null){
+            from = LocalDate.of(0000,00,00);
         }
-        if(to.isEmpty()){
-            to = "9999-99-99";
+        if(to == null){
+            to = LocalDate.of(0000,00,00);
         }
         List<TaskLog> showTLList = getTaskLogs();
         // 日付がfrom以降かつto以前であるデータをperiodTLListに保存する
@@ -228,14 +233,14 @@ public class TaskLogService {
     }
 
     // 12:リスト内のIDに該当するdateを変更する。
-    public TaskLog resetDate(int taskLogId,String text){
+    public TaskLog resetDate(int taskLogId,LocalDate date){
         TaskLog targetTaskLog = findById(taskLogId);
         // taskIdの方が論理削除済みの場合、インスタンスが存在しないのでnullになる。
         // その場合、nullを戻す
         if(targetTaskLog == null){            
             return null;
         }
-        targetTaskLog.setDate(text);
+        targetTaskLog.setDate(date);
         targetTaskLog.setUpdatedAt(LocalDateTime.now());
         tLRepository.saveAll(tLList);
         return targetTaskLog;

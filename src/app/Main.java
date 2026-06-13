@@ -6,6 +6,7 @@ import app.repository.TaskLogRepository;
 import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
+import app.InputValidator;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,16 +42,19 @@ public class Main{
     }
     
     static void run(){
+        //入力関係
+        Scanner sc = new Scanner(System.in,StandardCharsets.UTF_8);
+        //InputValidatorクラス用
+        InputValidator iv = new InputValidator(sc);
         
         System.out.println("\n----------------------------------------");
         System.out.println("-----タスク管理アプリ----");
         System.out.println("----------------------------------------\n\n");
 
-        Scanner sc = new Scanner(System.in,StandardCharsets.UTF_8);
         while (true) { 
             System.out.println("----------------------------------------");
             
-            System.out.println("実行したい機能を選択してください");
+            System.out.println("実行したい機能の数値を入力してください");
             System.out.println("""
                     -   1 : タスク登録 \n-   2 : ログ登録 
                     -   3 : タスク一覧表示 \n-   4 : ログ一覧表示 
@@ -75,7 +79,7 @@ public class Main{
             switch (choice) {
                 // 1 : タスク登録
                 case 1:
-                    Task tInput = inputTask(sc);
+                    Task tInput = inputTask(iv);
                     tService.addTask(tInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
                     tService.addTask("買い物","家事",
@@ -90,7 +94,7 @@ public class Main{
                                 
                 // 2 : ログ登録
                 case 2:
-                    TaskLog tLInput = inputTaskLog(sc);
+                    TaskLog tLInput = inputTaskLog(iv);
                     tLService.addTaskLog(tLInput);
                     // ↓サンプル入力の手間を省くため、オーバーロードで対処
                     tLService.addTaskLog(2,LocalDate.parse("2026-01-31"),60,"洗濯",
@@ -134,7 +138,7 @@ public class Main{
                 
                 // 6 : 期間指定ログ表示
                 case 6:
-                    taskLogs = inputPeriod(sc);
+                    taskLogs = inputPeriod(iv);
                     System.out.println("\n----------------------------");
                     for(TaskLog t : taskLogs){
                         System.out.println(t);
@@ -144,7 +148,7 @@ public class Main{
 
                 // 7 : 期間指定タスク別時間集計
                 case 7:
-                    taskLogs = inputPeriod(sc);
+                    taskLogs = inputPeriod(iv);
                     Map<String,Integer> mapSBP = tLService.sumByPeriodTaskLogs(taskLogs);
                     System.out.println("\n----------------------------");
                     for(Map.Entry<String,Integer> entry : mapSBP.entrySet()){
@@ -155,7 +159,7 @@ public class Main{
 
                 // 8 : タスク検索
                 case 8:
-                    taskLogs = inputKeyword(sc);
+                    taskLogs = inputKeyword(iv);
                     System.out.println("\n----------------------------");
                     for(TaskLog tl : taskLogs){
                         //String task = tService.findById(tl.getTaskId());
@@ -168,7 +172,7 @@ public class Main{
                     
                 // 9 : 集計結果ソート
                 case 9 :
-                    List<Map.Entry<String,Integer>> mapToList = inputSelect(sc);
+                    List<Map.Entry<String,Integer>> mapToList = inputSelect(iv);
 
                     for(Map.Entry<String,Integer> entry : mapToList){
                         System.out.println("task : " + entry.getKey() + " , minute : " + entry.getValue());
@@ -178,8 +182,8 @@ public class Main{
                 //10 更新（Task:taskName）
                 case 10:
                     String column = "タスク名";   
-                    int id = inputId(column, sc);
-                    String text = inputText(column,sc);
+                    int id = inputId(column, iv);
+                    String text = inputText(column,iv,true);
                     if(tService.existById(id)){
                         tService.resetTaskName(id,text);
                         System.out.println("\n--------task--------------------");
@@ -194,8 +198,8 @@ public class Main{
                 //11 更新（Task:category）
                 case 11:
                     column = "カテゴリー";   
-                    id = inputId(column, sc);
-                    text = inputText(column,sc);
+                    id = inputId(column, iv);
+                    text = inputText(column,iv,true);
                     if(tService.existById(id)){
                         tService.resetCategory(id,text);
                         System.out.println("\n--------task--------------------");
@@ -210,8 +214,8 @@ public class Main{
                 //12 更新（TaskLog:date）
                 case 12:
                     column = "ログ日時";   
-                    id = inputId(column, sc);
-                    LocalDate date = inputLocalDate(column,sc);
+                    id = inputId(column, iv);
+                    LocalDate date = inputLocalDate(column,iv);
                     TaskLog tempTL = tLService.resetDate(id,date);
                     // 論理削除済みのtaskIdの場合、resetDateの戻り値はnullとなる
                     // Taskインスタンスが戻った（nullでない）場合、インスタンスをリストに含める。
@@ -228,8 +232,8 @@ public class Main{
                 //13 更新（TaskLog:minutes）
                 case 13:
                     column = "実施時間";   
-                    id = inputId(column, sc);
-                    int value = inputValue(column,sc);
+                    id = inputId(column, iv);
+                    int value = inputValue(column,iv);
                     if(tLService.existById(id)){
                         tLService.resetMinutes(id,value);
                         System.out.println("\n--------taskLog--------------------");
@@ -244,8 +248,8 @@ public class Main{
                 //14 更新（TaskLog:memo）
                 case 14:
                     column = "メモ";   
-                    id = inputId(column, sc);
-                    text = inputText(column,sc);
+                    id = inputId(column, iv);
+                    text = inputText(column,iv,false);
                     if(tLService.existById(id)){
                         tLService.resetMemo(id,text);
                         System.out.println("\n--------taskLog--------------------");
@@ -259,7 +263,7 @@ public class Main{
 
                 //15 Task削除
                 case 15:
-                    id = inputId(sc);
+                    id = inputId(iv);
                     if(tService.existById(id)){
                         System.out.println("\n--------task--------------------");
                         System.out.println(tService.deleteTask(id));
@@ -272,7 +276,7 @@ public class Main{
 
                 //16 TaskLog削除
                 case 16:
-                    id = inputId(sc);
+                    id = inputId(iv);
                     if(tLService.existById(id)){
                         System.out.println("\n--------taskLog--------------------");
                         System.out.println(tLService.deleteTaskLog(id));
@@ -295,11 +299,11 @@ public class Main{
     }
 
     // タスク　コンソール登録データ入力
-    static Task inputTask(Scanner sc){
+    static Task inputTask(InputValidator iv){
         System.out.print("task ? : ");
-        String taskName = sc.nextLine();
+        String taskName = iv.inputString(true);
         System.out.print("category ? : ");
-        String category = sc.nextLine();        
+        String category = iv.inputString(true);        
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
         LocalDateTime deletedAt = null;
@@ -307,46 +311,44 @@ public class Main{
     }
     
     // タスクログ　コンソール登録データ入力
-    static TaskLog inputTaskLog(Scanner sc){
+    static TaskLog inputTaskLog(InputValidator iv){
         System.out.print("date ? : ");
         System.out.println("※入力形式は、\"****-**-**\"　としてください");
-        LocalDate date = LocalDate.parse(sc.nextLine());
+        LocalDate date = iv.inputLocalDate(true);
         System.out.print("minutes ? : ");
-        int minutes = sc.nextInt();
-        sc.nextLine();
+        int minutes = iv.inputInt(true);
         System.out.print("memo ? : ");
-        String memo = sc.nextLine();
+        String memo = iv.inputString(false);
         System.out.print("ID ? : ");
-        int taskId = sc.nextInt();
+        int taskId = iv.inputInt(true);
         LocalDateTime createdAt = LocalDateTime.now();
         LocalDateTime updatedAt = LocalDateTime.now();
-        sc.nextLine();
         return new TaskLog(taskId,date,minutes,memo,createdAt,updatedAt);
     }
 
     // 期間指定入力
-    static List<TaskLog> inputPeriod(Scanner sc){
+    static List<TaskLog> inputPeriod(InputValidator iv){
         System.out.println("指定した期間のログ一覧を表示します");
         System.out.println("開始日を指定してください");
         System.out.println("※指定しない場合は入力せず、enterキーを押してください");
         System.out.print("start date ? : ");
-        LocalDate from = LocalDate.parse(sc.nextLine());
+        LocalDate from = iv.inputLocalDate(false);
         System.out.println("終了日を指定してください");
         System.out.println("※指定しない場合は入力せず、enterキーを押してください");
         System.out.print("end date ? : ");
-        LocalDate to = LocalDate.parse(sc.nextLine());
+        LocalDate to = iv.inputLocalDate(false);
         return tLService.periodTaskLogs(from,to);
     }
     
     // タスク検索
-    static List<TaskLog> inputKeyword(Scanner sc){
+    static List<TaskLog> inputKeyword(InputValidator iv){
         System.out.println("検索したいタスク名を入力してください : ");
-        String keyword = sc.nextLine();
+        String keyword = iv.inputString(true);    
         return tLService.searchByTaskName(keyword);
     }
     
     // ソート形式選択→
-    static List<Map.Entry<String,Integer>> inputSelect(Scanner sc){
+    static List<Map.Entry<String,Integer>> inputSelect(InputValidator iv){
         boolean desc = false;
         
         while(true){
@@ -355,8 +357,7 @@ public class Main{
             System.out.println("順番を選択してください : ");
             System.out.println(" 0 : 昇順 , 1 : 降順");
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            int choice = iv.inputInt(true);
             
             switch (choice) {
                 // 0 : 昇順
@@ -377,48 +378,50 @@ public class Main{
     }
 
     // 変更ID入力
-    static int inputId(String column,Scanner sc){
+    static int inputId(String column,InputValidator iv){
         System.out.println(column + "を変更したいIDを入力してください。");
         System.out.println("Id? : ");
-        int targetId = sc.nextInt();
-        sc.nextLine();
+        int targetId = iv.inputInt(true);
         return targetId;
     }
 
     // 変更後文字列入力
-    static String inputText(String column,Scanner sc){
+    static String inputText(String column,InputValidator iv,boolean required){
+        String text = "";
         System.out.println("変更後の" + column + "を入力してください。");
         System.out.println("変更後" + column + " : ");
-        String text = sc.nextLine();
+        if(required){
+            text = iv.inputString(true);
+        }else{
+            text = iv.inputString(false);
+        }
         return text;
     }
     
     // 変更後数値入力
-    static int inputValue(String column,Scanner sc){
+    static int inputValue(String column,InputValidator iv){
+        int value = 0;
         System.out.println("変更後の" + column + "を入力してください。");
         System.out.println("変更後" + column + " : ");
-        int value = sc.nextInt();
-        sc.nextLine();
+        value = iv.inputInt(true);
         return value;
     }
     
     // 変更後文字列入力
-    static LocalDate inputLocalDate(String column,Scanner sc){
+    static LocalDate inputLocalDate(String column,InputValidator iv){
         System.out.println("変更後の" + column + "を入力してください。");
         System.out.println("変更後" + column + " : ");
 
-        String text = sc.nextLine();
-        LocalDate date = LocalDate.parse(text);
+        LocalDate date = iv.inputLocalDate(true);
 
         return date;
     }
     
     // 削除ID入力
-    static int inputId(Scanner sc){
+    static int inputId(InputValidator iv){
         System.out.println("削除したいインスタンスのIDを入力してください。");
         System.out.println("Id? : ");
-        int id = sc.nextInt();
-        sc.nextLine();        
+        int id = iv.inputInt(true);   
         return id;
     }
 }

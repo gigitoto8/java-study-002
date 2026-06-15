@@ -25,16 +25,12 @@ public class TaskLogRepository {
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     // File file = new File ・・・は
     // メソッド実行毎にクラス生成する
-    // アプリ起動時のファイル有無
-    boolean existFile = false;
     
     // CSVファイルファイル書き込み
     public void saveTaskLog(TaskLog taskLog){
         
-        // ファイル指定
         File file = new File(TASKLOG_FILE_PATH);
-        // ファイル有無確認
-        existFile = file.exists();
+        boolean existFile = file.exists();
         
         try(BufferedWriter bw = new BufferedWriter(
             new OutputStreamWriter(
@@ -46,7 +42,6 @@ public class TaskLogRepository {
                 bw.write("taskLogId,taskId,date,minutes,memo,createdAt,updatedAt\n");
                 existFile = true;
             }
-            // 一行のデータを書き込む
             bw.write(taskLog.toCsv() + "\n");
             System.out.println("保存しました");
         }catch(IOException e){
@@ -58,17 +53,14 @@ public class TaskLogRepository {
     // CSVファイル読み込み
     public List<TaskLog> loadTaskLogs(){
 
-        // ファイル指定
         File file = new File(TASKLOG_FILE_PATH);
-        // ファイル有無確認
-        existFile = file.exists();
+        boolean existFile = file.exists();
             
-        // リスト（読み込みデータを入れる箱）準備
-        List<TaskLog> list = new ArrayList<>();
+        List<TaskLog> taskLogs = new ArrayList<>();
         // CSVファイルが存在しない場合、空のリストを戻しメソッドを終了させる
         if(!existFile){
             System.out.println("no TaskLog data\n");
-            return list;
+            return taskLogs;
         }
 
         try(BufferedReader br = new BufferedReader(
@@ -90,29 +82,24 @@ public class TaskLogRepository {
                 LocalDate date = LocalDate.parse(data[2]);
                 int minutes = Integer.parseInt(data[3]);
                 String memo = data[4];
-                // dataの要素数が4よりも大きいか否か
-                // String memo = ((data.length > 4) ? data[4] : "");
-
                 LocalDateTime createdAt = LocalDateTime.parse(data[5], DATETIME_FORMATTER);
                 LocalDateTime updatedAt = LocalDateTime.parse(data[6], DATETIME_FORMATTER);
                 TaskLog record = new TaskLog(taskLogId,taskId, date, minutes, memo,createdAt,updatedAt);
                 // 一行のデータをリストに加える
-                list.add(record);
+                taskLogs.add(record);
             }
         }catch(IOException e){
             System.out.println("ファイル読み込みエラー");
             e.printStackTrace();
         }
-    return list;
+    return taskLogs;
     }
 
     // CSVファイルを上書き更新
-    public void saveAll(List<TaskLog> tLList){
+    public void saveAll(List<TaskLog> taskLogList){
         
-        // ファイル指定
         File file = new File(TASKLOG_FILE_PATH);
-        // ファイル有無確認
-        existFile = file.exists();
+        boolean existFile = file.exists();
             
         // ファイルが無い場合、
         if(!existFile){
@@ -127,8 +114,7 @@ public class TaskLogRepository {
                     
             bw.write("taskLogId,taskId,date,minutes,memo,createdAt,updatedAt\n");
 
-            for(TaskLog tL : tLList){
-                // 一行のデータを書き込む
+            for(TaskLog tL : taskLogList){
                 bw.write(tL.toCsv() + "\n");
             }
             System.out.println("更新しました");

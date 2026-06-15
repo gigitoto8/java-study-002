@@ -22,15 +22,12 @@ public class TaskRepository {
     // formatterを共通化
     private static final DateTimeFormatter DATETIME_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    // アプリ起動時のファイル有無
-    boolean existFile = false;
 
     // CSVファイルに追記
     public void saveTask(Task task){
         
         File file = new File(TASK_FILE_PATH);
-        // ファイル有無確認       
-        existFile = file.exists();
+        boolean existFile = file.exists();
         
         try (BufferedWriter bw = new BufferedWriter(
             new OutputStreamWriter(
@@ -54,18 +51,15 @@ public class TaskRepository {
     // CSVファイル読み込み
     public List<Task> loadTasks(){
 
-        // ファイル指定
         File file = new File(TASK_FILE_PATH);
-        // ファイル有無確認
-        existFile = file.exists();
+        boolean existFile = file.exists();
         
-        // リスト（読み込みデータを入れる箱）準備
-        List<Task> list = new ArrayList<>(); 
+        List<Task> tasks = new ArrayList<>(); 
         
         // CSVファイルが存在しない場合、空のリストを戻しメソッドを終了させる
         if(!existFile){
             System.out.println("no Task data\n");
-            return list;
+            return tasks;
         }
         try(BufferedReader br = new BufferedReader(
             new InputStreamReader(
@@ -91,22 +85,20 @@ public class TaskRepository {
                                                 null : LocalDateTime.parse(data[5],DATETIME_FORMATTER);
                 // オブジェクト化
                 Task record = new Task(taskId, task, category,createdAt,updatedAt,deletedAt);
-                // listに追加
-                list.add(record);
+                // tasksに追加
+                tasks.add(record);
             }
         } catch (IOException e){
             e.printStackTrace();
         }
-        return list;
+        return tasks;
     }
 
     // CSVファイル上書き更新
-    public void saveAll(List<Task> tList){
+    public void saveAll(List<Task> taskList){
         
-        // ファイル指定
         File file = new File(TASK_FILE_PATH);
-        // ファイル有無確認
-        existFile = file.exists();
+        boolean existFile = file.exists();
             
         // ファイルが無い場合、
         if(!existFile){
@@ -121,7 +113,7 @@ public class TaskRepository {
 
             bw.write("task_id,taskName,category,createdAt,updatedAt,deletedAt\n");
             
-            for(Task t : tList){
+            for(Task t : taskList){
                 bw.write(t.toCsv() + "\n");
             }
             System.out.println("上書きしました");

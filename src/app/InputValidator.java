@@ -7,17 +7,16 @@ import java.time.DateTimeException;
 
 public class InputValidator{
 
-    private Scanner sc;
-    String input;
+    private final Scanner sc;
 
     public InputValidator(Scanner sc){
         this.sc = sc;
     }
 
-    // 文字列チェック、requiredの値は、必須入力ならtrue、任意入力ならfalse
+    // 文字列入力チェック、requiredの値は、必須入力ならtrue、任意入力ならfalse
     public String inputString(boolean required){
         while(true){
-            input = sc.nextLine();
+            String input = sc.nextLine();
             if(required){
                 // 空文字チェック
                 if(input.trim().isEmpty()){
@@ -31,10 +30,10 @@ public class InputValidator{
         }
     }
     
-    // 数値チェック
+    // 整数入力チェック、requiredの値は、必須入力ならtrue、任意入力ならfalse
     public int inputInt(boolean required){
         while(true){
-            input = sc.nextLine();
+            String input = sc.nextLine();
             if(required){
                 if(input.trim().isEmpty()){
                     System.out.println("空入力は無効です。");
@@ -50,10 +49,10 @@ public class InputValidator{
         }
     }
     
-    // 日付チェック 
+    // 日付入力チェック、requiredの値は、必須入力ならtrue、任意入力ならfalse
     public LocalDate inputLocalDate(boolean required){
         while(true){
-            input = sc.nextLine();
+            String input = sc.nextLine();
             if(required){
                 if(input.trim().isEmpty()){
                     System.out.println("空入力は無効です。");

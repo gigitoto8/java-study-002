@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TaskLog {
-    
+public class TaskLog {    
     private int taskLogId;
     private int taskId;
     private LocalDate date;
@@ -19,9 +18,9 @@ public class TaskLog {
     private static final DateTimeFormatter DATETIME_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-   // コンストラクタ、コンソール入力データ保存時
+   // 新規登録用コンストラクタ（taskLogId自動採番）
     public TaskLog(int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
-        //インスタンス作成時、taskLogIdが自動生成される
+        // インスタンス作成時、taskLogIdが自動生成される
         counter++;
         this.taskLogId = counter;
         this.taskId = taskId;
@@ -32,7 +31,7 @@ public class TaskLog {
         this.updatedAt = updatedAt;
     }
 
-    // コンストラクタ、CSVデータ読込時
+    // CSV読込用コンストラクタ（既存taskLogIdを使用）
     public TaskLog(int taskLogId,int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
         this.taskLogId = taskLogId;
         this.taskId = taskId;
@@ -59,14 +58,13 @@ public class TaskLog {
     public void setUpdatedAt(LocalDateTime updatedAt){this.updatedAt = updatedAt;}
     // ※外部からID変更させないため、Id設定メソッド（setTaskLogId）は定義しない
     // CSV読込時に読み込んだtaskLogIdをcounterに設定する
-    public static void setCountTaskId(int c){counter = c;}
+    public static void setTaskLogIdCount(int c){counter = c;}
 
     // 形式を定めてCSVに保存する
     public String toCsv(){
         return taskLogId + "," + taskId + "," + date + "," + minutes + "," + memo + ","
                  + createdAt.format(DATETIME_FORMATTER) + "," + updatedAt.format(DATETIME_FORMATTER);
     }
-
 
     @Override
     public String toString(){

@@ -14,45 +14,44 @@ import java.util.Map;
 
 public class TaskLogService {
     
-    private TaskLogRepository tLRepository;
-    private TaskService tService;
+    private TaskLogRepository taskLogRepository;
+    private TaskService taskService;
     //外からTaskServiceとTaskLogRepositoryを受け取る
-    public TaskLogService(TaskService tService,TaskLogRepository tLRepository){
-        this.tService = tService;
-        this.tLRepository = tLRepository;
+    public TaskLogService(TaskService taskService,TaskLogRepository taskLogRepository){
+        this.taskService = taskService;
+        this.taskLogRepository = taskLogRepository;
     }
     
     // TaskLogデータを保存する変数
-    private List<TaskLog> tLList = new ArrayList<>();
+    private List<TaskLog> taskLogList = new ArrayList<>();
     
     // CSVファイルを読み込み、データをListに保存
     // 併せて、使用済みtaskLogIdを取得
     public void loadTaskLogCSV(){
-        this.tLList = tLRepository.loadTaskLogs();
-        int MaxId = 0;
-        for(TaskLog tL : tLList){
-            if(tL.getTaskLogId() > MaxId){
-                MaxId = tL.getTaskLogId();
+        this.taskLogList = taskLogRepository.loadTaskLogs();
+        int maxId = 0;
+        for(TaskLog tL : taskLogList){
+            if(tL.getTaskLogId() > maxId){
+                maxId = tL.getTaskLogId();
             }
         }
-        TaskLog.setCountTaskId(MaxId);
+        TaskLog.setTaskLogIdCount(maxId);
     }
 
-    // データ追記
     // 実際にTaskIdが使われているかチェックできた場合、保存を実行。
     // リスト保存とCSV保存を実行
     public void addTaskLog(TaskLog taskLog){
-        if(tService.existById(taskLog.getTaskId())){
-            tLList.add(taskLog);
-            tLRepository.saveTaskLog(taskLog);
+        if(taskService.existById(taskLog.getTaskId())){
+            taskLogList.add(taskLog);
+            taskLogRepository.saveTaskLog(taskLog);
         }else{
             System.out.println("taskId \"" + taskLog.getTaskId() + "\" は存在しません");
         }
     }
 
-    // データ追記　オーバーロード
+    // オーバーロード
     public void addTaskLog(int taskId,LocalDate date,int minutes,String memo,LocalDateTime createdAt,LocalDateTime updatedAt){
-        if(tService.existById(taskId)){
+        if(taskService.existById(taskId)){
             TaskLog tl = new TaskLog(taskId,date,minutes,memo,createdAt,updatedAt);
             addTaskLog(tl); //オーバーロード
         }else{
@@ -62,26 +61,26 @@ public class TaskLogService {
 
     // タスクログ一覧取得（タスク側で論理削除済IDに係るデータを除外）
     public List<TaskLog> getTaskLogs(){
-        List<TaskLog> result = new ArrayList<>();
+        List<TaskLog> activeTaskLogs = new ArrayList<>();
         int targetId = 0;
-        for(TaskLog sTL : tLList){
+        for(TaskLog sTL : taskLogList){
             // TaskLogインスタンスに係るtaskIdを取得
             targetId = sTL.getTaskId();
             // taskIdに係るTaskインスタンスを取得
             // ※注意　findByIdはこのクラスではなく、TaskServiceのメソッド
-            Task t = tService.findById(targetId);
+            Task t = taskService.findById(targetId);
             // 論理削除済みのtaskIdの場合、findByIdの戻り値はnullとなる
             // Taskインスタンスが戻った（nullでない）場合、インスタンスをリストに含める。
             if(t != null){
-                result.add(sTL);
+                activeTaskLogs.add(sTL);
             }
         }
-        return  result;
+        return  activeTaskLogs;
     }
 
-    // taskLogIdが存在を判定
+    // taskLogIdの存在を判定
     public boolean existById(int taskLogId){        
-        for(TaskLog tL : tLList){
+        for(TaskLog tL : taskLogList){
             if(tL.getTaskLogId() == taskLogId){
                 return true;
             }
@@ -89,9 +88,9 @@ public class TaskLogService {
         return false;
     }
 
-    // taskLogIdを渡して、該当するTaskLogデータを渡す
+    // taskLogIdを渡して、該当するTaskLogを渡す
     public TaskLog findById(int taskLogId){
-        for (TaskLog tL : tLList) {
+        for (TaskLog tL : taskLogList) {
             if(tL.getTaskLogId() == taskLogId){
                 return tL;
             }
@@ -105,7 +104,7 @@ public class TaskLogService {
         Map<String,Integer> result = new HashMap<>();
         // Taskデータ参照用Map変数、IDとタスク名で構成
         Map<Integer,String> taskMap = new HashMap<>();
-        List<Task> tempTList = tService.getTasks();
+        List<Task> tempTList = taskService.getTasks();
         //taskMapにTaskデータを保存
         for(Task t : tempTList){
             taskMap.put(t.getTaskId(),t.getTaskName());
@@ -114,13 +113,11 @@ public class TaskLogService {
         List<TaskLog> showTLList = getTaskLogs();
         // 
         for(TaskLog tL : showTLList){
-            // TaskデータのtaskIdと紐づくtask名を取得する
             String tempTName = taskMap.get(tL.getTaskId());
             // ↓taskが見つからない場合は下記の処理。nullがmapに入ってしまうのは好ましくない
             if(tempTName == null){
                 continue;
             }
-            // 実施時間を仮保管
             int tempMinutes = tL.getMinutes();
             // resultに既にIDが含まれるか否か
             if(result.containsKey(tempTName)){
@@ -138,10 +135,10 @@ public class TaskLogService {
         List<TaskLog> periodTL = new ArrayList<>();
         // 開始日または終了日が未入力の場合、それぞれ最大値または最小値を代入
         if(from == null){
-            from = LocalDate.of(0000,00,00);
+            from = LocalDate.of(0000,01,01);
         }
         if(to == null){
-            to = LocalDate.of(0000,00,00);
+            to = LocalDate.of(9999,12,31);
         }
         List<TaskLog> showTLList = getTaskLogs();
         // 日付がfrom以降かつto以前であるデータをperiodTLListに保存する
@@ -155,18 +152,18 @@ public class TaskLogService {
     }
 
     // 7:期間指定集計
-    public Map<String,Integer> sumByPeriodTaskLogs(List<TaskLog> tLList){
+    public Map<String,Integer> sumByPeriodTaskLogs(List<TaskLog> taskLogList){
         // 戻り値として使用するMap変数、ID（String型）と実施時間で構成
         Map<String,Integer> result = new HashMap<>();
         // Taskデータ参照用Map変数、IDとタスク名で構成
         Map<Integer,String> taskMap = new HashMap<>();
-        List<Task> tList = tService.getTasks();
+        List<Task> tList = taskService.getTasks();
         //taskMapにTaskデータを保存
         for(Task t : tList){
             taskMap.put(t.getTaskId(),t.getTaskName());
         }
 
-        for(TaskLog tL : tLList){
+        for(TaskLog tL : taskLogList){
             // TaskデータのtaskIdと一致する場合、紐づいたtask名を取得する
             String task = taskMap.get(tL.getTaskId());
             // ↓taskが見つからない場合は下記の処理。nullがmapに入ってしまうのは好ましくない
@@ -186,8 +183,8 @@ public class TaskLogService {
 
     // 8:検索
     public List<TaskLog> searchByTaskName(String keyword){
-        List<TaskLog> sumByPeriodTL = new ArrayList<>();
-        List<Task> tList = tService.getTasks();
+        List<TaskLog> matchedTaskLogs = new ArrayList<>();
+        List<Task> tList = taskService.getTasks();
         // 検索ワードが含まれるタスクのIDを保存するリスト
         List<Integer> taskIds = new ArrayList<>();
         // keywordに該当するtaskIdを抽出する
@@ -203,12 +200,12 @@ public class TaskLogService {
             count++;
         }
         // taskIdが一致するレコードを抽出する
-        for(TaskLog tL : tLList){
+        for(TaskLog tL : taskLogList){
             if(taskIds.contains(tL.getTaskId())){
-                sumByPeriodTL.add(tL);
+                matchedTaskLogs.add(tL);
             }
         }
-        return sumByPeriodTL;
+        return matchedTaskLogs;
     }
 
     // 9:ソート
@@ -233,52 +230,49 @@ public class TaskLogService {
     }
 
     // 12:リスト内のIDに該当するdateを変更する。
-    public TaskLog resetDate(int taskLogId,LocalDate date){
+    public TaskLog updateDate(int taskLogId,LocalDate date){
         TaskLog targetTaskLog = findById(taskLogId);
-        // taskIdの方が論理削除済みの場合、インスタンスが存在しないのでnullになる。
-        // その場合、nullを戻す
+        // 指定したtaskLogIdが存在しない場合はnullを返す
         if(targetTaskLog == null){            
             return null;
         }
         targetTaskLog.setDate(date);
         targetTaskLog.setUpdatedAt(LocalDateTime.now());
-        tLRepository.saveAll(tLList);
+        taskLogRepository.saveAll(taskLogList);
         return targetTaskLog;
     }  
     
     // 13:リスト内のIDに該当するminutesを変更する。
-    public TaskLog resetMinutes(int taskLogId,int value){
+    public TaskLog updateMinutes(int taskLogId,int value){
         TaskLog targetTaskLog = findById(taskLogId);
-        // taskIdの方が論理削除済みの場合、インスタンスが存在しないのでnullになる。
-        // その場合、nullを戻す
+        // 指定したtaskLogIdが存在しない場合はnullを返す
         if(targetTaskLog == null){            
             return null;
         }
         targetTaskLog.setMinutes(value);
         targetTaskLog.setUpdatedAt(LocalDateTime.now());
-        tLRepository.saveAll(tLList);
+        taskLogRepository.saveAll(taskLogList);
         return targetTaskLog;
     }  
     
     // 14:リスト内のIDに該当するmemoを変更する。
-    public TaskLog resetMemo(int taskLogId,String text){
+    public TaskLog updateMemo(int taskLogId,String text){
         TaskLog targetTaskLog = findById(taskLogId);
-        // taskIdの方が論理削除済みの場合、インスタンスが存在しないのでnullになる。
-        // その場合、nullを戻す
+        // 指定したtaskLogIdが存在しない場合はnullを返す
         if(targetTaskLog == null){            
             return null;
         }
         targetTaskLog.setMemo(text);
         targetTaskLog.setUpdatedAt(LocalDateTime.now());
-        tLRepository.saveAll(tLList);
+        taskLogRepository.saveAll(taskLogList);
         return targetTaskLog;
     }  
     
     // 16:リスト内のIDに該当するインスタンスを削除する。戻り値はMainに表示させる内容として利用
     public TaskLog deleteTaskLog(int taskLogId){
         TaskLog targetTaskLog = findById(taskLogId);
-        tLList.remove(findById(taskLogId));
-        tLRepository.saveAll(tLList);
+        taskLogList.remove(findById(taskLogId));
+        taskLogRepository.saveAll(taskLogList);
         return targetTaskLog;
     }
 }

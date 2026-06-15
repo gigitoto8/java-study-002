@@ -17,7 +17,7 @@ public class Task {
     private static final DateTimeFormatter DATETIME_FORMATTER =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-    // コンストラクタ、コンソール入力データ登録時
+    // 新規登録用コンストラクタ（taskId自動採番）
     public Task(String taskName,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
         // インスタンス作成時、taskIdが自動生成される
         counter++;
@@ -29,7 +29,7 @@ public class Task {
         this.deletedAt = deletedAt;
     }
 
-    // コンストラクタ、CSVデータ読込時
+    // CSV読込用コンストラクタ（既存taskIdを使用）
     public Task(int taskId,String taskName,String category,LocalDateTime createdAt,LocalDateTime updatedAt,LocalDateTime deletedAt){
         this.taskId = taskId;
         this.taskName = taskName;
@@ -52,7 +52,7 @@ public class Task {
     public void setDeletedAt(LocalDateTime deletedAt){this.deletedAt = deletedAt;}
     // ※外部からID変更させないため、Id設定メソッド（setTaskId）は定義しない
     // CSV読込時に読み込んだtaskIdをcounterに設定する
-    public static void setCountTaskId(int c){counter = c;}
+    public static void setTaskIdCount(int c){counter = c;}
 
     // 形式を定めてCSVに保存する
     public String toCsv(){

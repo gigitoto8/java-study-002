@@ -3,7 +3,9 @@ package app.model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Task {
+import app.display.Displayable;
+
+public class Task implements Displayable{
     
     private int taskId;
     private String taskName;
@@ -75,5 +77,10 @@ public class Task {
             // deleteAtがnullである場合はnullを、そうでない場合は日付データを代入する
             deletedAt == null ? "null" : deletedAt.format(DATETIME_FORMATTER)
         );
+    }
+
+    @Override
+    public String display() {
+        return toString();
     }
 }

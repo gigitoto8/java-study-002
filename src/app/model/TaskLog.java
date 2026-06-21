@@ -4,7 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TaskLog {    
+import app.display.Displayable;
+
+public class TaskLog implements Displayable{    
     private int taskLogId;
     private int taskId;
     private LocalDate date;
@@ -75,5 +77,10 @@ public class TaskLog {
             createdAt.format(DATETIME_FORMATTER),
             updatedAt.format(DATETIME_FORMATTER)
         );
+    }
+
+    @Override
+    public String display() {
+        return toString();
     }
 }

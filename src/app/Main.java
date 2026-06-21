@@ -7,6 +7,7 @@ import app.repository.TaskRepository;
 import app.service.TaskLogService;
 import app.service.TaskService;
 import app.InputValidator;
+import app.display.DisplayUtil;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ public class Main{
 
     private static TaskService taskService;
     private static TaskLogService taskLogService;
+    private static DisplayUtil displayUtil;
     
     public static void main(String[] args) {
         // 初期化ブロック
@@ -38,6 +40,8 @@ public class Main{
         // CSVからデータ読み込み、Listに変換
         taskService.loadTaskCSV();
         taskLogService.loadTaskLogCSV();
+        // 
+        displayUtil = new DisplayUtil();
     }
     
     static void run(){
@@ -80,38 +84,19 @@ public class Main{
                 case 1:
                     Task tInput = inputTask(iv);
                     taskService.addTask(tInput);
-                    // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    taskService.addTask("買い物","家事",
-                                    LocalDateTime.parse("2005-04-01T12:00:00"),
-                                    LocalDateTime.parse("2005-08-01T12:00:00"),
-                                    null);
-                    taskService.addTask("書類作成","仕事",
-                                    LocalDateTime.parse("2015-01-01T12:00:00"),
-                                    LocalDateTime.parse("2015-04-01T12:00:00"),
-                                    null);    
                     break;
                                 
                 // 2 : ログ登録
                 case 2:
                     TaskLog tLInput = inputTaskLog(iv);
                     taskLogService.addTaskLog(tLInput);
-                    // ↓サンプル入力の手間を省くため、オーバーロードで対処
-                    taskLogService.addTaskLog(2,LocalDate.parse("2026-01-31"),60,"洗濯",
-                                        LocalDateTime.parse("2022-01-31T15:00:30"),
-                                        LocalDateTime.parse("2022-04-30T15:00:30")
-                    );
-                    taskLogService.addTaskLog(3,LocalDate.parse("2026-02-15"),120,"帳簿",
-                    LocalDateTime.parse("2022-02-28T15:00:30"),
-                    LocalDateTime.parse("2022-05-31T15:00:30"));        
                 break;
 
                 // 3 : タスク一覧表示
                 case 3:
                     List<Task> tasks = taskService.getTasks();
                     System.out.println("\n--------task--------------------");
-                    for(Task t : tasks){
-                        System.out.println(t);
-                    }
+                    displayUtil.showList(tasks);
                     System.out.println("--------task--------------------\n");
                     break;
                     
@@ -119,9 +104,7 @@ public class Main{
                 case 4:
                     List<TaskLog> taskLogs = taskLogService.getTaskLogs();
                     System.out.println("\n--------tasklog--------------------");
-                    for(TaskLog t : taskLogs){
-                        System.out.println(t);
-                    }
+                    displayUtil.showList(taskLogs);
                     System.out.println("--------tasklog--------------------\n");
                 break;
                     
@@ -139,9 +122,7 @@ public class Main{
                 case 6:
                     taskLogs = inputPeriod(iv);
                     System.out.println("\n----------------------------");
-                    for(TaskLog t : taskLogs){
-                        System.out.println(t);
-                    }
+                    displayUtil.showList(taskLogs);
                     System.out.println("----------------------------\n");
                 break;
 

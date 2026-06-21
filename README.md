@@ -44,7 +44,6 @@
 * taskId（タスクID） int型
 * taskName（タスク名　例：Java学習、買い物、書類作成 など） String型
 * category（カテゴリ　例：学習・仕事・家事 など） String型
-※以下、STEP6で追加  
 * createdAt（作成日時） LocalDateTime型
 * updatedAt（更新日時） LocalDateTime型
 * deletedAt（削除日時） LocalDateTime型
@@ -54,7 +53,6 @@ Taskの実施記録データ
 * taskId（タスクID、TaskのTaskIdと関連付ける） int型
 * minutes（実行時間、分単位） int型
 * memo（メモ、任意入力） String型
-※以下、STEP6で追加
 * taskLogId（タスクログID） int型
 * createdAt（作成日時） LocalDateTime型
 * updatedAt（更新日時） LocalDateTime型
@@ -75,7 +73,12 @@ src/
      ├ repository  
      │  ├ TaskRepository.java  
      │  └ TaskLogRepository.java  
-     └ InputValidator.java
+     ├ InputValidator.java
+     └ display  
+        ├ Diaplayable.java  
+        └ DisplayUtil.java  
+
+
 
 ## 開発ステップ概要
 
@@ -100,6 +103,7 @@ src/
   
 * Task : taskId、taskName、category  
 * TaskLog : date、taskId、minutes、memo  
+※taskLogId,createAt,updateAt,deleteAtはSTEP6で追加
 
 #### 設計上のポイント
 * TaskとTaskLogの責務を分離した。
@@ -273,5 +277,80 @@ TaskおよびTaskLogに対する更新・削除機能を実装し、CRUD機能�
 
 ---
 
+### STEP7：設計改善（コメント整理・入力チェック・インターフェース導入）
+
+本ステップでは、コメント整理、変数命名の見直し、入力チェック機能の共通化、インターフェースを利用した表示処理の改善を実施した。
+
+#### 実装内容
+
+* コメント、メソッド名、変数名の見直し
+* 入力チェック処理の共通化
+* 一覧表示処理の共通化
+
+* InputValidatorクラスの作成
+* Displayableインターフェースの導入
+* DisplayUtilクラスの作成
+
+#### 設計上のポイント
+
+##### コメント、メソッド名、変数名の見直し
+
+* 不要なコメントを削除し、必要な箇所のみ説明を記載
+* メソッド名および変数名を見直し、処理内容が分かりやすい名称へ修正
+* 可読性および保守性の向上を意識した
+
+##### 入力チェック処理の共通化
+
+入力内容の適正化を図るため、InputValidatorクラスを作成。  
+実装した主な入力チェックは以下の通り。
+
+* 文字列入力チェック
+* 整数入力チェック
+* 日付入力チェック
+* 必須入力チェック
+
+##### インターフェースによる表示処理の共通化
+
+TaskおよびTaskLogにDisplayableインターフェースを実装し、表示処理を共通化した。
+
+Displayableインターフェース
+
+* display() メソッドを定義
+
+実装クラス
+
+* Task
+* TaskLog
+
+表示処理はDisplayUtilクラスへ集約し、以下のような構成とした。
+
+* Displayable型として扱う
+* List<? extends Displayable> を利用
+* 共通メソッドで一覧表示を実行
+
+これにより、TaskとTaskLogを同一の仕組みで表示できるようになった。
+
+#### 学習内容
+
+本ステップでは以下を学習した。
+
+* 可読性を意識したコメントおよび命名
+* 入力処理の責務分離
+* インターフェースの基本的な利用方法
+* ジェネリクス（? extends）の利用
+* ポリモーフィズムによる共通処理の実装
+* 共通化による重複コード削減
 
 
+## まとめ
+
+本リポジトリは、JavaSilver取得後の学習およびポートフォリオ作成を目的としてアプリを開発した。
+
+当初は登録・一覧表示のみのシンプルな構成から開始し、開発を進める中でServiceクラスによる責務分離、RepositoryクラスによるCSVファイル操作、検索・集計機能、CRUD機能、入力チェック機能の追加、インターフェースを利用した表示処理の共通化を段階的に追加した。
+
+開発中は、クラス間の責務分離やデータの受け渡し方法、論理削除への対応などで何度も設計を見直した。
+特にCSVによるデータ永続化やCRUD機能の実装では、既存処理との整合性を保ちながら修正する必要があり、多くの試行錯誤を行った。
+
+また、継承やインターフェースについては知識として学習するだけでは理解が難しかったので、実際にコードへ組み込むことで理解を深めることができた。
+
+本リポジトリでの活動は一通り実施したが、今後も必要に応じてリファクタリングや機能追加を行い、Javaの理解を深めていきたい。
